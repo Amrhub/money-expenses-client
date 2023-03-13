@@ -141,7 +141,7 @@ function Products() {
           </TableBody>
         </Table>
       </TableContainer>
-      {count && (
+      {count > 0 && (
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component='div'
