@@ -13,34 +13,55 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { useState } from 'react';
 import ProductModal from '@/components/modals/product/ProductModal';
 import { Product } from '@/dto/product.dto';
+import { withPageAuthRequired } from '@auth0/nextjs-auth0';
+import { useUser } from '@auth0/nextjs-auth0/client';
+import { getAccessToken } from '@auth0/nextjs-auth0';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import request from '@/axios';
 
-const initialProducts = [
-  {
-    id: 1,
-    name: 'Newspapers and magazines',
-    price: 70,
-  },
-  {
-    id: 2,
-    name: 'Groceries and Food Items',
-    price: 55,
-  },
-  {
-    id: 3,
-    name: 'Soft Drinks',
-    price: 40,
-  },
-  {
-    id: 4,
-    name: 'Tissues, headache tablets',
-    price: 15,
-  },
-];
-
-export default function Home() {
-  const [products, setProducts] = useState(initialProducts);
+function Products() {
+  const queryClient = useQueryClient();
+  const [pagination, setPagination] = useState({
+    page: 1,
+    rowsPerPage: 5,
+  });
   const [open, setOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | undefined>();
+
+  const {
+    data: response,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ['products', pagination.page, pagination.rowsPerPage],
+    queryFn: () =>
+      request<{ products: Product[]; count: number }>({
+        url: '/products',
+        params: { rowsPerPage: pagination.rowsPerPage, page: pagination.page },
+      }).then((res) => res),
+    cacheTime: 1 * 60 * 60 * 1000,
+    staleTime: 1 * 60 * 60 * 1000,
+  });
+
+  const { mutate } = useMutation(
+    (id: number) =>
+      request({
+        url: `/products/${id}`,
+        method: 'DELETE',
+      }),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(['products']);
+      },
+    }
+  );
+
+  if (isLoading) return <h1>Loading...</h1>;
+  if (isError) return <h1>Error</h1>;
+
+  if (!response) return <h1>Products not found</h1>;
+
+  const { products, count } = response;
 
   return (
     <>
@@ -73,8 +94,8 @@ export default function Home() {
         product={selectedProduct}
       />
 
-      <TableContainer sx={{ mt: 4 }}>
-        <Table>
+      <TableContainer sx={{ mt: 4, maxHeight: '500px' }}>
+        <Table stickyHeader>
           <TableHead>
             <TableRow>
               <TableCell padding='checkbox' sx={{ pl: 2 }}>
@@ -87,10 +108,10 @@ export default function Home() {
           </TableHead>
           <TableBody>
             {products.length > 0 &&
-              products.map((product, _index) => (
+              products.map((product, index) => (
                 <TableRow hover classes={{ root: 'table-row' }} key={product.id}>
                   <TableCell padding='checkbox' sx={{ pl: 2 }}>
-                    {product.id}
+                    {index + 1}
                   </TableCell>
                   <TableCell>{product.name}</TableCell>
                   <TableCell>{product.price}</TableCell>
@@ -107,7 +128,7 @@ export default function Home() {
                     </IconButton>
                     <IconButton
                       onClick={() => {
-                        setProducts(products.filter((p) => p.id !== product.id));
+                        mutate(product.id);
                       }}
                       color='error'
                       sx={{ p: '3px', fontSize: '18px' }}
@@ -120,15 +141,29 @@ export default function Home() {
           </TableBody>
         </Table>
       </TableContainer>
-      <TablePagination
-        rowsPerPageOptions={[5, 10, 25]}
-        component='div'
-        count={products.length}
-        rowsPerPage={5}
-        page={0}
-        onPageChange={() => {}}
-        onRowsPerPageChange={() => {}}
-      />
+      {count && (
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25]}
+          component='div'
+          count={count}
+          rowsPerPage={pagination.rowsPerPage}
+          page={pagination.page}
+          onPageChange={(event, page) => setPagination((prev) => ({ ...prev, page }))}
+          onRowsPerPageChange={(event) => {
+            const newRowsPerPage = +event.target.value;
+            let newPage = pagination.page;
+            while (newPage * newRowsPerPage > count) {
+              newPage--;
+            }
+
+            setPagination((prev) => ({ ...prev, page: newPage, rowsPerPage: newRowsPerPage }));
+          }}
+        />
+      )}
     </>
   );
 }
+
+export default Products;
+
+export const getServerSideProps = withPageAuthRequired();
