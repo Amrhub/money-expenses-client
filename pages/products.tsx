@@ -18,11 +18,12 @@ import { useUser } from '@auth0/nextjs-auth0/client';
 import { getAccessToken } from '@auth0/nextjs-auth0';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import request from '@/axios';
+import { useStore } from '@/store/store';
 
 function Products() {
   const queryClient = useQueryClient();
   const [pagination, setPagination] = useState({
-    page: 1,
+    page: 0,
     rowsPerPage: 5,
   });
   const [open, setOpen] = useState(false);
@@ -32,6 +33,7 @@ function Products() {
     data: response,
     isLoading,
     isError,
+    isFetching,
   } = useQuery({
     queryKey: ['products', pagination.page, pagination.rowsPerPage],
     queryFn: () =>
@@ -43,7 +45,7 @@ function Products() {
     staleTime: 1 * 60 * 60 * 1000,
   });
 
-  const { mutate } = useMutation(
+  const { mutate, isLoading: isMutating } = useMutation(
     (id: number) =>
       request({
         url: `/products/${id}`,
@@ -56,12 +58,10 @@ function Products() {
     }
   );
 
-  if (isLoading) return <h1>Loading...</h1>;
+  useStore.setState({ showLoader: isLoading || isFetching || isMutating });
+
   if (isError) return <h1>Error</h1>;
-
-  if (!response) return <h1>Products not found</h1>;
-
-  const { products, count } = response;
+  if (!response && !isLoading) return <h1>Products not found</h1>;
 
   return (
     <>
@@ -107,8 +107,8 @@ function Products() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {products.length > 0 &&
-              products.map((product, index) => (
+            {!!response?.products?.length &&
+              response?.products?.map((product, index) => (
                 <TableRow hover classes={{ root: 'table-row' }} key={product.id}>
                   <TableCell padding='checkbox' sx={{ pl: 2 }}>
                     {index + 1}
@@ -141,25 +141,23 @@ function Products() {
           </TableBody>
         </Table>
       </TableContainer>
-      {count > 0 && (
-        <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
-          component='div'
-          count={count}
-          rowsPerPage={pagination.rowsPerPage}
-          page={pagination.page}
-          onPageChange={(event, page) => setPagination((prev) => ({ ...prev, page }))}
-          onRowsPerPageChange={(event) => {
-            const newRowsPerPage = +event.target.value;
-            let newPage = pagination.page;
-            while (newPage * newRowsPerPage > count) {
-              newPage--;
-            }
+      <TablePagination
+        rowsPerPageOptions={[5, 10, 25]}
+        component='div'
+        count={response?.count || 0}
+        rowsPerPage={pagination.rowsPerPage}
+        page={pagination.page}
+        onPageChange={(event, page) => setPagination((prev) => ({ ...prev, page }))}
+        onRowsPerPageChange={(event) => {
+          const newRowsPerPage = +event.target.value;
+          let newPage = pagination.page;
+          while (response && newPage * newRowsPerPage > response.count) {
+            newPage--;
+          }
 
-            setPagination((prev) => ({ ...prev, page: newPage, rowsPerPage: newRowsPerPage }));
-          }}
-        />
-      )}
+          setPagination((prev) => ({ ...prev, page: newPage, rowsPerPage: newRowsPerPage }));
+        }}
+      />
     </>
   );
 }

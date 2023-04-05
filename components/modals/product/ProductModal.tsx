@@ -8,6 +8,7 @@ import Grow from '@mui/material/Grow/Grow';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import request from '@/axios';
 import { Product } from '@/dto/product.dto';
+import { useStore } from '@/store/store';
 
 interface IProps {
   open: boolean;
@@ -56,6 +57,12 @@ const ProductModal = ({ open, handleClose, product }: IProps) => {
       }),
     {
       onSuccess,
+      onMutate: () => {
+        useStore.setState({ showLoader: true });
+      },
+      onSettled: () => {
+        useStore.setState({ showLoader: false });
+      },
     }
   );
 
@@ -98,7 +105,9 @@ const ProductModal = ({ open, handleClose, product }: IProps) => {
       keepMounted={false}
     >
       {/* <Grow in={open}> */}
-      <Paper sx={{ borderRadius: 1, width: '500px', m: 'auto', overflow: 'hidden' }}>
+      <Paper
+        sx={{ borderRadius: 1, width: { xs: '350px', sm: '500px' }, m: 'auto', overflow: 'hidden' }}
+      >
         <ModalHeader>
           <Typography variant='h6'>{isEdit ? 'Edit Product' : 'Add Product'}</Typography>
           <IconButton aria-label='close-modal' onClick={resetThenClose} sx={{ color: 'white' }}>
@@ -122,6 +131,7 @@ const ProductModal = ({ open, handleClose, product }: IProps) => {
               variant='outlined'
               value={productInputs?.price}
               onChange={(e) => setProductInputs((prev) => ({ ...prev, price: +e.target.value }))}
+              inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
             />
           </Stack>
         </ModalBody>

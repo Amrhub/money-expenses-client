@@ -6,6 +6,8 @@ import Head from 'next/head';
 import { UserProvider } from '@auth0/nextjs-auth0/client';
 import { withPageAuthRequired } from '@auth0/nextjs-auth0';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
+import { Box, useMediaQuery } from '@mui/material';
+import LoaderModal from '@/components/modals/loader/LoaderModal';
 
 function App({ Component, pageProps }: AppProps) {
   const queryClient = new QueryClient();
@@ -19,11 +21,17 @@ function App({ Component, pageProps }: AppProps) {
         <QueryClientProvider client={queryClient}>
           <CssBaseline />
           <Sidebar />
-          <main
-            style={{ marginLeft: `${drawerWidth}px`, paddingBlock: '24px', paddingInline: '32px' }}
+          <LoaderModal />
+          <Box
+            component='main'
+            sx={{
+              ml: { xs: 0, sm: `${drawerWidth}px` },
+              paddingBlock: '24px',
+              paddingInline: '32px',
+            }}
           >
             <Component {...pageProps} />
-          </main>
+          </Box>
         </QueryClientProvider>
       </UserProvider>
     </>
