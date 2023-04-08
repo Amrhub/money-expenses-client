@@ -64,13 +64,7 @@ const Sidebar = () => {
         <Typography variant='body1' color='initial'>
           {user?.name}
         </Typography>
-        <IconButton
-          aria-label='log out'
-          onClick={() => {
-            fetch('/api/auth/logout', { method: 'DELETE' });
-          }}
-          color='error'
-        >
+        <IconButton aria-label='log out' LinkComponent={Link} href='/api/auth/logout' color='error'>
           <LogoutIcon />
         </IconButton>
       </Stack>

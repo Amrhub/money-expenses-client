@@ -1,4 +1,4 @@
-import { Button, Container, Divider, IconButton, Typography } from '@mui/material';
+import { Button, IconButton } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import Head from 'next/head';
 import TableContainer from '@mui/material/TableContainer';
@@ -10,15 +10,14 @@ import TableBody from '@mui/material/TableBody';
 import TablePagination from '@mui/material/TablePagination';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import ProductModal from '@/components/modals/product/ProductModal';
 import { Product } from '@/dto/product.dto';
 import { withPageAuthRequired } from '@auth0/nextjs-auth0';
-import { useUser } from '@auth0/nextjs-auth0/client';
-import { getAccessToken } from '@auth0/nextjs-auth0';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import request from '@/axios';
 import { useStore } from '@/store/store';
+import PageTitle from '@/components/pageTitle/PageTitle';
 
 function Products() {
   const queryClient = useQueryClient();
@@ -58,7 +57,9 @@ function Products() {
     }
   );
 
-  useStore.setState({ showLoader: isLoading || isFetching || isMutating });
+  useEffect(() => {
+    useStore.setState({ showLoader: isLoading || isFetching || isMutating });
+  }, [isLoading, isFetching, isMutating]);
 
   if (isError) return <h1>Error</h1>;
   if (!response && !isLoading) return <h1>Products not found</h1>;
@@ -69,18 +70,8 @@ function Products() {
         <title>My Products</title>
         <meta name='description' content='A list of products I purchase regularly' />
         <meta name='viewport' content='width=device-width, initial-scale=1' />
-        <link rel='icon' href='/favicon.ico' />
       </Head>
-      <Typography variant='h5'>My Products</Typography>
-      <Divider
-        sx={{
-          width: 10,
-          height: 0.5,
-          backgroundColor: 'primary.main',
-          mb: 4,
-        }}
-        classes={{ root: 'custom-hr' }}
-      />
+      <PageTitle text='My Products' />
       <Button variant='contained' startIcon={<AddIcon />} onClick={() => setOpen(true)}>
         Add Product
       </Button>
@@ -115,10 +106,13 @@ function Products() {
                   </TableCell>
                   <TableCell>{product.name}</TableCell>
                   <TableCell>{product.price}</TableCell>
-                  <TableCell classes={{ root: 'table-row_btns-container' }}>
+                  <TableCell
+                    classes={{ root: 'table-row_btns-container' }}
+                    sx={{ display: 'flex', gap: { xs: 1, sm: 2 } }}
+                  >
                     <IconButton
                       color='primary'
-                      sx={{ mr: 2, p: '3px', fontSize: '18px' }}
+                      sx={{ p: '3px', fontSize: '18px' }}
                       onClick={() => {
                         setSelectedProduct(product);
                         setOpen(true);

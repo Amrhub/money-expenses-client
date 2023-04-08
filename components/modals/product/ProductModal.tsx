@@ -1,14 +1,10 @@
-import { Modal, Paper, styled, Typography, IconButton, Input, TextField } from '@mui/material';
-import React from 'react';
-import CancelIcon from '@mui/icons-material/Cancel';
-import Stack from '@mui/material/Stack';
-import Divider from '@mui/material/Divider';
-import Button from '@mui/material/Button';
-import Grow from '@mui/material/Grow/Grow';
+import { TextField, Stack } from '@mui/material';
+import React, { useEffect, useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import request from '@/axios';
 import { Product } from '@/dto/product.dto';
 import { useStore } from '@/store/store';
+import MyModal from '../myModal/MyModal';
 
 interface IProps {
   open: boolean;
@@ -16,30 +12,16 @@ interface IProps {
   product?: Product;
 }
 
-const ModalHeader = styled('div')(({ theme }) => ({
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  paddingBlock: theme.spacing(1.5),
-  paddingInline: theme.spacing(2),
-  paddingLeft: theme.spacing(2.5),
-  paddingRight: '18px',
-  backgroundColor: theme.palette.primary.main,
-  color: theme.palette.primary.contrastText,
-}));
-const ModalBody = styled('div')(({ theme }) => ({
-  paddingBlock: theme.spacing(4),
-  paddingInline: theme.spacing(2.5),
-}));
-const ModalFooter = styled('div')(({ theme }) => ({}));
-
 const ProductModal = ({ open, handleClose, product }: IProps) => {
-  const [productInputs, setProductInputs] = React.useState<Omit<Product, 'id'>>(
-    product || { name: '', price: 0 }
-  );
-  if (product && productInputs.name !== product.name) {
-    setProductInputs({ name: product.name, price: product.price });
-  }
+  const [productInputs, setProductInputs] = useState<Omit<Product, 'id'>>({
+    name: '',
+    price: 0,
+  });
+
+  useEffect(() => {
+    if (product?.name) setProductInputs({ name: product.name, price: product.price });
+  }, [product?.name, product?.price]);
+
   const isEdit = product ? true : false;
   const queryClient = useQueryClient();
   const onSuccess = () => {
@@ -96,76 +78,45 @@ const ProductModal = ({ open, handleClose, product }: IProps) => {
   };
 
   return (
-    <Modal
+    <MyModal
       open={open}
-      onClose={resetThenClose}
-      aria-labelledby='modal-modal-title'
-      aria-describedby='modal-modal-description'
-      disableRestoreFocus
-      keepMounted={false}
+      handleClose={resetThenClose}
+      title={isEdit ? 'Edit Product' : 'Add Product'}
+      handleAction={handleAction}
+      actionText={isEdit ? 'Save' : 'Add'}
+      actionDisabled={
+        productInputs.name === '' ||
+        productInputs.price === 0 ||
+        (productInputs.name === product?.name && productInputs.price === product?.price)
+      }
     >
-      {/* <Grow in={open}> */}
-      <Paper
-        sx={{ borderRadius: 1, width: { xs: '350px', sm: '500px' }, m: 'auto', overflow: 'hidden' }}
-      >
-        <ModalHeader>
-          <Typography variant='h6'>{isEdit ? 'Edit Product' : 'Add Product'}</Typography>
-          <IconButton aria-label='close-modal' onClick={resetThenClose} sx={{ color: 'white' }}>
-            <CancelIcon color='inherit' />
-          </IconButton>
-        </ModalHeader>
-        <ModalBody>
-          <Stack spacing={1} direction='column' marginBottom={4}>
-            <label htmlFor='product-name'>Product Name</label>
-            <TextField
-              id='product-name'
-              variant='outlined'
-              value={productInputs?.name}
-              onChange={(e) => setProductInputs((prev) => ({ ...prev, name: e.target.value }))}
-            />
-          </Stack>
-          <Stack spacing={1} direction='column'>
-            <label htmlFor='product-name'>Price</label>
-            <TextField
-              id='product-name'
-              variant='outlined'
-              value={productInputs?.price}
-              onChange={(e) => setProductInputs((prev) => ({ ...prev, price: +e.target.value }))}
-              inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
-            />
-          </Stack>
-        </ModalBody>
-        <Divider />
-        <ModalFooter>
-          <Stack
-            direction='row'
-            justifyContent='flex-end'
-            alignItems='center'
-            px={2.5}
-            py={3}
-            color='rgba(0, 0, 0, 0.6)'
-          >
-            <Button
-              variant='outlined'
-              color='inherit'
-              sx={{ width: '100px', marginRight: 1.5 }}
-              onClick={resetThenClose}
-            >
-              Cancel
-            </Button>
-            <Button
-              variant='contained'
-              sx={{ width: '100px' }}
-              onClick={handleAction}
-              disabled={!product?.name && !product?.price && productInputs.price <= 0}
-            >
-              {isEdit ? 'Save' : 'Add'}
-            </Button>
-          </Stack>
-        </ModalFooter>
-      </Paper>
-      {/* </Grow> */}
-    </Modal>
+      <Stack spacing={1} direction='column' marginBottom={4}>
+        <label htmlFor='product-name'>Product Name</label>
+        <TextField
+          id='product-name'
+          variant='outlined'
+          value={productInputs.name}
+          onChange={(e) => {
+            setProductInputs((prev) => {
+              return { name: e.target.value, price: prev.price };
+            });
+          }}
+        />
+      </Stack>
+      <Stack spacing={1} direction='column'>
+        <label htmlFor='product-name'>Price</label>
+        <TextField
+          id='product-name'
+          variant='outlined'
+          value={productInputs?.price === 0 ? '' : productInputs?.price}
+          onChange={(e) => {
+            if (isNaN(+e.target.value)) return;
+            setProductInputs((prev) => ({ ...prev, price: +e.target.value }));
+          }}
+          inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+        />
+      </Stack>
+    </MyModal>
   );
 };
 
