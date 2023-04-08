@@ -1,4 +1,4 @@
-import { Button, IconButton } from '@mui/material';
+import { Button, IconButton, Typography, Tooltip, Zoom } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import Head from 'next/head';
 import TableContainer from '@mui/material/TableContainer';
@@ -104,7 +104,23 @@ function Products() {
                   <TableCell padding='checkbox' sx={{ pl: 2 }}>
                     {index + 1}
                   </TableCell>
-                  <TableCell>{product.name}</TableCell>
+                  <TableCell>
+                    <Tooltip
+                      title={product.name}
+                      disableFocusListener
+                      placement='bottom-start'
+                      TransitionComponent={Zoom}
+                      TransitionProps={{ timeout: 250 }}
+                    >
+                      <Typography
+                        variant='body2'
+                        noWrap
+                        sx={{ display: 'block', maxWidth: { xs: '8ch', sm: '24ch', md: 'auto' } }}
+                      >
+                        {product.name}
+                      </Typography>
+                    </Tooltip>
+                  </TableCell>
                   <TableCell>{product.price}</TableCell>
                   <TableCell
                     classes={{ root: 'table-row_btns-container' }}
@@ -112,7 +128,6 @@ function Products() {
                   >
                     <IconButton
                       color='primary'
-                      sx={{ p: '3px', fontSize: '18px' }}
                       onClick={() => {
                         setSelectedProduct(product);
                         setOpen(true);
@@ -125,7 +140,6 @@ function Products() {
                         mutate(product.id);
                       }}
                       color='error'
-                      sx={{ p: '3px', fontSize: '18px' }}
                     >
                       <DeleteIcon fontSize='inherit' />
                     </IconButton>

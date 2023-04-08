@@ -7,8 +7,8 @@ import {
   ListItemButton,
   useMediaQuery,
   SwipeableDrawer,
-  Box,
   IconButton,
+  Box,
 } from '@mui/material';
 import { blueGrey } from '@mui/material/colors';
 import Image from 'next/image';
@@ -41,7 +41,12 @@ const Sidebar = () => {
 
       <NavLinks>
         {navLinks.map((link) => (
-          <Link href={link.path} key={link.path} style={{ textDecoration: 'none' }}>
+          <Link
+            href={link.path}
+            key={link.path}
+            style={{ textDecoration: 'none' }}
+            onClick={() => setOpen(false)}
+          >
             <ListItemButton
               selected={router.pathname === link.path}
               sx={{ borderRadius: 1, py: 1.5 }}
@@ -89,18 +94,37 @@ const Sidebar = () => {
       {children}
     </Drawer>
   ) : (
-    <SwipeableDrawer
-      onClose={() => {
-        setOpen(false);
-      }}
-      onOpen={() => {
-        setOpen(true);
-      }}
-      swipeAreaWidth={80}
-      open={open}
-    >
-      <Stack sx={{ pt: 3, pb: 1.5, width: drawerWidth, height: '100%' }}>{children}</Stack>
-    </SwipeableDrawer>
+    <>
+      <Box
+        sx={{
+          position: 'fixed',
+          height: 80,
+          width: '4px',
+          bgcolor: blueGrey[200],
+          left: '4px',
+          top: '50%',
+          translate: '0 -50%',
+          borderRadius: 1,
+        }}
+      />
+      <SwipeableDrawer
+        onClose={() => {
+          setOpen(false);
+        }}
+        onOpen={() => {
+          setOpen(true);
+        }}
+        swipeAreaWidth={32}
+        open={open}
+        disableDiscovery
+        ModalProps={{
+          keepMounted: true,
+        }}
+        disableSwipeToOpen={false}
+      >
+        <Stack sx={{ pt: 3, pb: 1.5, width: drawerWidth, height: '100%' }}>{children}</Stack>
+      </SwipeableDrawer>
+    </>
   );
 };
 

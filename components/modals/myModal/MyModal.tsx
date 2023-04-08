@@ -21,7 +21,7 @@ interface IProps {
   actionDisabled?: boolean;
 }
 
-const ModalHeader = styled('div')(({ theme }) => ({
+export const ModalHeader = styled('div')(({ theme }) => ({
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'center',
@@ -32,11 +32,13 @@ const ModalHeader = styled('div')(({ theme }) => ({
   backgroundColor: theme.palette.primary.main,
   color: theme.palette.primary.contrastText,
 }));
-const ModalBody = styled('div')(({ theme }) => ({
+export const ModalBody = styled('div')(({ theme }) => ({
   paddingBlock: theme.spacing(4),
   paddingInline: theme.spacing(2.5),
+  maxHeight: '500px',
+  overflowY: 'auto',
 }));
-const ModalFooter = styled('div')(({ theme }) => ({}));
+export const ModalFooter = styled('div')(({ theme }) => ({}));
 
 const MyModal = ({
   handleClose,
@@ -65,7 +67,7 @@ const MyModal = ({
             <CancelIcon color='inherit' />
           </IconButton>
         </ModalHeader>
-        <ModalBody>{children}</ModalBody>
+        <ModalBody className='modal-body'>{children}</ModalBody>
 
         <Divider />
         <ModalFooter>
