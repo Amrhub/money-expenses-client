@@ -35,8 +35,7 @@ const request = <T>(options: AxiosRequestConfig): Promise<T | undefined> => {
   };
 
   const onError = (error: any) => {
-    console.error('Request Failed:', error.config);
-    return undefined;
+    return Promise.reject(error.response || error.message);
   };
 
   return client(options).then(onSuccess).catch(onError);

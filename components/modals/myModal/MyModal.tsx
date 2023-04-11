@@ -19,6 +19,8 @@ interface IProps {
   handleAction?: () => void;
   actionText?: string;
   actionDisabled?: boolean;
+  desktopWidth?: number;
+  mobileWidth?: number;
 }
 
 export const ModalHeader = styled('div')(({ theme }) => ({
@@ -48,6 +50,8 @@ const MyModal = ({
   handleAction,
   actionText,
   actionDisabled,
+  desktopWidth = 500,
+  mobileWidth = 350,
 }: IProps) => {
   return (
     <Modal
@@ -59,7 +63,12 @@ const MyModal = ({
       keepMounted={false}
     >
       <Paper
-        sx={{ borderRadius: 1, width: { xs: '350px', sm: '500px' }, m: 'auto', overflow: 'hidden' }}
+        sx={{
+          borderRadius: 1,
+          width: { xs: `${mobileWidth}px`, sm: `${desktopWidth}px` },
+          m: 'auto',
+          overflow: 'hidden',
+        }}
       >
         <ModalHeader>
           <Typography variant='h6'>{title}</Typography>

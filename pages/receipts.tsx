@@ -1,10 +1,11 @@
 import PageTitle from '@/components/pageTitle/PageTitle';
-import React, { useEffect, useState, createRef } from 'react';
+import React, { useEffect, useState, createRef, useRef } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import Button from '@mui/material/Button';
 import MyModal from '@/components/modals/myModal/MyModal';
 import Typography from '@mui/material/Typography';
-import { Autocomplete, TextField, Stack, Tooltip, Divider, Zoom } from '@mui/material';
+import { Autocomplete, TextField, Stack, Tooltip, Divider, Zoom, IconButton } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { useQuery } from '@tanstack/react-query';
 import { Product } from '@/dto/product.dto';
 import request from '@/axios';
@@ -26,6 +27,7 @@ const Receipts = () => {
       itemsInitialState
     );
   const modalBodyRef = createRef<HTMLDivElement>();
+  const shouldScroll = useRef(true);
 
   const addInput = () => {
     setItems([...items, { name: '', price: 0, quantity: 1 }]);
@@ -51,6 +53,11 @@ const Receipts = () => {
   }, [isLoading, isFetching]);
 
   useEffect(() => {
+    if (!shouldScroll.current) {
+      shouldScroll.current = true;
+      return;
+    }
+
     modalBodyRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [items, modalBodyRef]);
 
@@ -74,10 +81,16 @@ const Receipts = () => {
           setOpen(false);
           setItems(itemsInitialState);
         }}
+        handleAction={() => {
+          console.log(items);
+        }}
+        actionText='Add'
+        actionDisabled={items.some((item) => item.name === '' || !item.price || !item.quantity)}
         open={open}
+        desktopWidth={600}
       >
         <Stack>
-          <motion.div layout>
+          <motion.div layout transition={{ type: 'spring' }}>
             {items.length &&
               items.map((item, index) => (
                 <div key={item.name + index}>
@@ -186,6 +199,18 @@ const Receipts = () => {
                         });
                       }}
                     />
+
+                    <IconButton
+                      onClick={() => {
+                        shouldScroll.current = false;
+                        setItems(items.filter((_, i) => i !== index));
+                      }}
+                      color='error'
+                      disableRipple
+                      disabled={items.length === 1}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
                   </Stack>
                   {index + 1 !== items.length && (
                     <Divider sx={{ display: { xs: 'block', sm: 'none' } }} color='blue' />
