@@ -11,6 +11,7 @@ import { Product } from '@/dto/product.dto';
 import request from '@/axios';
 import { useStore } from '@/store/store';
 import { motion } from 'framer-motion';
+import { withPageAuthRequired } from '@auth0/nextjs-auth0';
 
 const itemsInitialState = [
   {
@@ -234,3 +235,5 @@ const Receipts = () => {
 };
 
 export default Receipts;
+
+export const getServerSideProps = withPageAuthRequired();

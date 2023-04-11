@@ -4,7 +4,6 @@ import CssBaseline from '@mui/material/CssBaseline';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
 import { UserProvider } from '@auth0/nextjs-auth0/client';
-import { withPageAuthRequired } from '@auth0/nextjs-auth0';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import { Box, useMediaQuery } from '@mui/material';
 import LoaderModal from '@/components/modals/loader/LoaderModal';
