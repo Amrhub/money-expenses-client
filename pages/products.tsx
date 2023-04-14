@@ -107,10 +107,10 @@ function Products() {
                   <TableCell>
                     <Tooltip
                       title={product.name}
-                      disableFocusListener
                       placement='bottom-start'
                       TransitionComponent={Zoom}
                       TransitionProps={{ timeout: 250 }}
+                      enterTouchDelay={0}
                     >
                       <Typography
                         variant='body2'
@@ -149,23 +149,25 @@ function Products() {
           </TableBody>
         </Table>
       </TableContainer>
-      <TablePagination
-        rowsPerPageOptions={[5, 10, 25]}
-        component='div'
-        count={response?.count || 0}
-        rowsPerPage={pagination.rowsPerPage}
-        page={pagination.page}
-        onPageChange={(event, page) => setPagination((prev) => ({ ...prev, page }))}
-        onRowsPerPageChange={(event) => {
-          const newRowsPerPage = +event.target.value;
-          let newPage = pagination.page;
-          while (response && newPage * newRowsPerPage > response.count) {
-            newPage--;
-          }
+      {
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25]}
+          component='div'
+          count={response?.count || 0}
+          rowsPerPage={pagination.rowsPerPage}
+          page={response?.count ? pagination.page : 0}
+          onPageChange={(_event, page) => setPagination((prev) => ({ ...prev, page }))}
+          onRowsPerPageChange={(event) => {
+            const newRowsPerPage = +event.target.value;
+            let newPage = pagination.page;
+            while (response && newPage * newRowsPerPage > response.count) {
+              newPage--;
+            }
 
-          setPagination((prev) => ({ ...prev, page: newPage, rowsPerPage: newRowsPerPage }));
-        }}
-      />
+            setPagination((prev) => ({ ...prev, page: newPage, rowsPerPage: newRowsPerPage }));
+          }}
+        />
+      }
     </>
   );
 }
