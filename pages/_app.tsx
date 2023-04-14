@@ -14,6 +14,7 @@ function App({ Component, pageProps }: AppProps) {
   return (
     <>
       <Head>
+        <title>Money Expenses</title>
         <meta name='viewport' content='initial-scale=1, width=device-width' />
       </Head>
       <UserProvider>

@@ -25,6 +25,7 @@ import { motion } from 'framer-motion';
 import { withPageAuthRequired } from '@auth0/nextjs-auth0';
 import { InfoOutlined } from '@mui/icons-material';
 import ListReceipts from '@/components/receipts/ListReceipts';
+import Head from 'next/head';
 
 const itemsInitialState = [
   {
@@ -121,6 +122,9 @@ const Receipts = () => {
 
   return (
     <>
+      <Head>
+        <title>Money Expenses | Receipts</title>
+      </Head>
       <Snackbar
         open={openSnackbar}
         autoHideDuration={6000}

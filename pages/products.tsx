@@ -68,7 +68,7 @@ function Products() {
   return (
     <>
       <Head>
-        <title>My Products</title>
+        <title>Money Expenses | My Products</title>
         <meta name='description' content='A list of products I purchase regularly' />
         <meta name='viewport' content='width=device-width, initial-scale=1' />
       </Head>
