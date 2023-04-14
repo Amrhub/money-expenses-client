@@ -17,13 +17,13 @@ import {
   Alert,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Product } from '@/dto/product.dto';
 import request from '@/axios';
 import { useStore } from '@/store/store';
 import { motion } from 'framer-motion';
 import { withPageAuthRequired } from '@auth0/nextjs-auth0';
-import { AccountCircle, InfoOutlined } from '@mui/icons-material';
+import { InfoOutlined } from '@mui/icons-material';
 import ListReceipts from '@/components/receipts/ListReceipts';
 
 const itemsInitialState = [
@@ -45,6 +45,7 @@ const Receipts = () => {
   const shouldScroll = useRef(true);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
+  const queryClient = useQueryClient();
 
   const addInput = () => {
     setItems([...items, { name: '', price: 0, quantity: 0 }]);
@@ -85,7 +86,10 @@ const Receipts = () => {
           })),
         },
       }).then((res) => res),
-    onSuccess: handleModalClose,
+    onSuccess: () => {
+      queryClient.invalidateQueries(['receipts']);
+      handleModalClose();
+    },
     onError: (error: any) => {
       if (error?.data?.message) {
         setSnackbarMessage(error.data.message);

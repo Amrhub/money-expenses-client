@@ -69,7 +69,16 @@ const Sidebar = () => {
         <Typography variant='body1' color='initial'>
           {user?.name}
         </Typography>
-        <IconButton aria-label='log out' LinkComponent={Link} href='/api/auth/logout' color='error'>
+        <IconButton
+          aria-label='log out'
+          onClick={() => {
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('accessTokenExpires');
+          }}
+          LinkComponent={Link}
+          href='/api/auth/logout'
+          color='error'
+        >
           <LogoutIcon />
         </IconButton>
       </Stack>

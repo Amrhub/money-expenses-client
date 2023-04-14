@@ -7,4 +7,7 @@ export default handleAuth({
       audience: process.env.AUTH0_AUDIENCE,
     },
   }),
+  onError: (error, req, res) => {
+    console.error('🚀 ~ file: [...auth0].ts:15 ~ error:', error);
+  },
 });

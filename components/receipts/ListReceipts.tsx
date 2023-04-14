@@ -12,7 +12,10 @@ const ListReceipts = () => {
     isFetching,
     isError,
     error,
-  } = useQuery(['receipts'], () => request<Receipt[]>({ url: '/receipts' }));
+  } = useQuery(['receipts'], () => request<Receipt[]>({ url: '/receipts' }), {
+    cacheTime: 1 * 60 * 60 * 1000,
+    staleTime: 1 * 60 * 60 * 1000,
+  });
 
   useEffect(() => {
     useStore.setState({ showLoader: isLoading || isFetching });

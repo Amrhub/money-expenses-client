@@ -7,27 +7,35 @@ const client = axios.create({
   },
 });
 
-client.interceptors.request.use(async (req) => {
-  let accessToken = '';
-  if (
-    localStorage &&
-    localStorage.getItem('accessToken') &&
-    localStorage.getItem('accessTokenExpires') &&
-    new Date(+(localStorage.getItem('accessTokenExpires') as string)) > new Date()
-  ) {
-    accessToken = localStorage.getItem('accessToken') as string;
-  } else {
-    const res = await fetch('/api/auth/access_token');
-    accessToken = await res.json();
-  }
-  if (localStorage) {
-    localStorage.setItem('accessToken', accessToken);
-    localStorage.setItem('accessTokenExpires', new Date().setHours(24).toString());
-  }
-  req.headers.Authorization = `Bearer ${accessToken}`;
+client.interceptors.request.use(
+  async (req) => {
+    let accessToken = '';
+    if (
+      localStorage &&
+      localStorage.getItem('accessToken') &&
+      localStorage.getItem('accessTokenExpires') &&
+      new Date(+(localStorage.getItem('accessTokenExpires') as string)) > new Date()
+    ) {
+      accessToken = localStorage.getItem('accessToken') as string;
+    } else {
+      const res = await fetch('/api/auth/access_token');
+      if (res.status !== 200)
+        throw new axios.Cancel('Request canceled due to missing auth session.');
 
-  return req;
-});
+      accessToken = await res.json();
+    }
+    if (localStorage && accessToken) {
+      localStorage.setItem('accessToken', accessToken);
+      localStorage.setItem('accessTokenExpires', new Date().setHours(24).toString());
+    }
+    req.headers.Authorization = `Bearer ${accessToken}`;
+
+    return req;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
 const request = <T>(options: AxiosRequestConfig): Promise<T | undefined> => {
   const onSuccess = (response: any) => {
