@@ -58,30 +58,32 @@ const Sidebar = () => {
           </Link>
         ))}
       </NavLinks>
-      <Stack
-        marginTop={'auto'}
-        mb={1.5}
-        mx={3}
-        direction='row'
-        alignItems='center'
-        justifyContent='space-between'
-      >
-        <Typography variant='body1' color='initial'>
-          {user?.name}
-        </Typography>
-        <IconButton
-          aria-label='log out'
-          onClick={() => {
-            localStorage.removeItem('accessToken');
-            localStorage.removeItem('accessTokenExpires');
-          }}
-          LinkComponent={Link}
-          href='/api/auth/logout'
-          color='error'
+      {user && (
+        <Stack
+          marginTop={'auto'}
+          mb={1.5}
+          mx={3}
+          direction='row'
+          alignItems='center'
+          justifyContent='space-between'
         >
-          <LogoutIcon />
-        </IconButton>
-      </Stack>
+          <Typography variant='body1' color='initial'>
+            {user.name}
+          </Typography>
+          <IconButton
+            aria-label='log out'
+            onClick={() => {
+              localStorage.removeItem('accessToken');
+              localStorage.removeItem('accessTokenExpires');
+            }}
+            LinkComponent={Link}
+            href='/api/auth/logout'
+            color='error'
+          >
+            <LogoutIcon />
+          </IconButton>
+        </Stack>
+      )}
     </>
   );
 

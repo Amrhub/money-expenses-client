@@ -38,13 +38,14 @@ const ListReceipts = () => {
               component={Stack}
               direction='row'
               justifyContent='space-between'
+              alignItems='center'
             >
               <Tooltip title={receipt.name} enterTouchDelay={0} arrow>
-                <Typography variant='body2' color='initial' noWrap>
+                <Typography variant='body1' color='initial' noWrap>
                   {receipt.name}
                 </Typography>
               </Tooltip>
-              <Typography variant='caption' color='initial'>
+              <Typography variant='body2' color='initial'>
                 {dateFormatter.format(new Date(receipt.createdAt))}
               </Typography>
             </Paper>

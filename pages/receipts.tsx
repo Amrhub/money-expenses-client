@@ -339,4 +339,5 @@ const Receipts = () => {
 
 export default Receipts;
 
-export const getServerSideProps = withPageAuthRequired();
+// TODO figure out why withPageAuthRequired doesn't work on vercel deployment
+// export const getServerSideProps = withPageAuthRequired();

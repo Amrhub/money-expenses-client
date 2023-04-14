@@ -18,6 +18,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import request from '@/axios';
 import { useStore } from '@/store/store';
 import PageTitle from '@/components/pageTitle/PageTitle';
+import { useUser } from '@auth0/nextjs-auth0/client';
 
 function Products() {
   const queryClient = useQueryClient();
@@ -174,4 +175,4 @@ function Products() {
 
 export default Products;
 
-export const getServerSideProps = withPageAuthRequired();
+// export const getServerSideProps = withPageAuthRequired();

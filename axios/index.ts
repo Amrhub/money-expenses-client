@@ -19,8 +19,10 @@ client.interceptors.request.use(
       accessToken = localStorage.getItem('accessToken') as string;
     } else {
       const res = await fetch('/api/auth/access_token');
-      if (res.status !== 200)
+      if (res.status !== 200) {
+        window.location.pathname = '/api/auth/login';
         throw new axios.Cancel('Request canceled due to missing auth session.');
+      }
 
       accessToken = await res.json();
     }
