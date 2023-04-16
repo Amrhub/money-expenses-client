@@ -5,8 +5,19 @@ import type { AppProps } from 'next/app';
 import Head from 'next/head';
 import { UserProvider } from '@auth0/nextjs-auth0/client';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
-import { Box, useMediaQuery } from '@mui/material';
+import { Box, ThemeProvider, createTheme, useMediaQuery } from '@mui/material';
 import LoaderModal from '@/components/modals/loader/LoaderModal';
+
+const theme = createTheme({
+  palette: {
+    secondary: {
+      main: '#7865eb',
+      dark: '#5446a4',
+      light: '#9383ef',
+      contrastText: '#fff',
+    },
+  },
+});
 
 function App({ Component, pageProps }: AppProps) {
   const queryClient = new QueryClient();
@@ -18,21 +29,23 @@ function App({ Component, pageProps }: AppProps) {
         <meta name='viewport' content='initial-scale=1, width=device-width' />
       </Head>
       <UserProvider>
-        <QueryClientProvider client={queryClient}>
-          <CssBaseline />
-          <Sidebar />
-          <LoaderModal />
-          <Box
-            component='main'
-            sx={{
-              ml: { xs: 0, sm: `${drawerWidth}px` },
-              paddingBlock: '24px',
-              paddingInline: '32px',
-            }}
-          >
-            <Component {...pageProps} />
-          </Box>
-        </QueryClientProvider>
+        <ThemeProvider theme={theme}>
+          <QueryClientProvider client={queryClient}>
+            <CssBaseline />
+            <Sidebar />
+            <LoaderModal />
+            <Box
+              component='main'
+              sx={{
+                ml: { xs: 0, sm: `${drawerWidth}px` },
+                paddingBlock: '24px',
+                paddingInline: '32px',
+              }}
+            >
+              <Component {...pageProps} />
+            </Box>
+          </QueryClientProvider>
+        </ThemeProvider>
       </UserProvider>
     </>
   );

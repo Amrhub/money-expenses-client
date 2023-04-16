@@ -9,18 +9,12 @@ import Receipt from './Receipt';
 const ListReceipts = () => {
   const {
     data: receipts,
-    isLoading,
-    isFetching,
     isError,
     error,
   } = useQuery(['receipts'], () => request<ReceiptDto[]>({ url: '/receipts' }), {
     cacheTime: 1 * 60 * 60 * 1000,
     staleTime: 1 * 60 * 60 * 1000,
   });
-
-  useEffect(() => {
-    useStore.setState({ showLoader: isLoading || isFetching });
-  }, [isLoading, isFetching]);
 
   if (isError) {
     console.error(error);

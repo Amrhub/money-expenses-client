@@ -85,6 +85,7 @@ input[type='number'] {
   height: 40px;
   overflow: hidden;
   cursor: pointer;
+  border-radius: 4000000px;
 }
 
 .receipt-container.open {
@@ -107,6 +108,7 @@ input[type='number'] {
   cursor: grab;
   cursor: -moz-grab;
   cursor: -webkit-grab;
+  border-radius: 4px;
 }
 
 .receipt-container.open .receipt:active {
@@ -126,4 +128,8 @@ input[type='number'] {
     padding: 20px 8px;
     left: 0 !important;
   }
+}
+
+.receipt-table .MuiTableCell-root {
+  border-bottom-color: inherit;
 }
