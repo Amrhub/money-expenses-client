@@ -22,7 +22,6 @@ import { Product } from '@/dto/product.dto';
 import request from '@/axios';
 import { useStore } from '@/store/store';
 import { motion } from 'framer-motion';
-import { withPageAuthRequired } from '@auth0/nextjs-auth0';
 import { InfoOutlined } from '@mui/icons-material';
 import ListReceipts from '@/components/receipts/ListReceipts';
 import Head from 'next/head';
@@ -199,7 +198,7 @@ const Receipts = () => {
           <motion.div layout transition={{ type: 'spring' }}>
             {items.length &&
               items.map((item, index) => (
-                <div key={item.name + index}>
+                <motion.div key={item.name + index} layout='position'>
                   <Stack direction={{ xs: 'column', sm: 'row' }} gap={2} my={1}>
                     <Autocomplete
                       disablePortal
@@ -321,7 +320,7 @@ const Receipts = () => {
                   {index + 1 !== items.length && (
                     <Divider sx={{ display: { xs: 'block', sm: 'none' } }} color='blue' />
                   )}
-                </div>
+                </motion.div>
               ))}
           </motion.div>
           <Button

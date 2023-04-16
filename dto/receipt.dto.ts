@@ -1,4 +1,4 @@
-export interface Receipt {
+export interface ReceiptDto {
   id: number;
   name: string;
   items: Array<{

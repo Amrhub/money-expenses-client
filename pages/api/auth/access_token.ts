@@ -3,7 +3,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { getAccessToken, Session, AccessTokenErrorCode } from '@auth0/nextjs-auth0';
 
 // const afterRefresh = (req: NextApiRequest, res: NextApiResponse, session: Session) => {
-//   session.user.customProperty = 'foo';
+//   // session.user.customProperty = 'foo';
 //   delete session.idToken;
 //   return session;
 // };
@@ -16,7 +16,11 @@ export default async function MyHandler(req: NextApiRequest, res: NextApiRespons
     });
     res.json(accessToken.accessToken);
   } catch (error: any) {
-    if (error.code === AccessTokenErrorCode.MISSING_SESSION)
+    console.log('🚀 ~ file: access_token.ts:19 ~ MyHandler ~ error:', error);
+    if (
+      error.code === AccessTokenErrorCode.MISSING_SESSION ||
+      error.code === AccessTokenErrorCode.EXPIRED_ACCESS_TOKEN
+    )
       res.status(401).json({ error: 'Missing session' });
   }
 }

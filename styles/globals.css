@@ -54,3 +54,76 @@ input::-webkit-inner-spin-button {
 input[type='number'] {
   -moz-appearance: textfield;
 }
+
+.overlay {
+  z-index: 1;
+  position: fixed;
+  background: rgba(0, 0, 0, 0.8);
+  will-change: opacity;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+}
+
+.overlay button {
+  background-color: transparent;
+  border: none;
+  outline: none;
+  display: block;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  width: 100vw;
+  left: 50%;
+
+  transform: translateX(-50%);
+}
+
+.receipt-container .receipt {
+  height: 40px;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.receipt-container.open {
+  top: 0;
+  left: 0;
+  right: 0;
+  position: fixed;
+  z-index: 10;
+  overflow: hidden;
+  padding: 40px;
+  height: 100%;
+  pointer-events: none;
+}
+
+.receipt-container.open .receipt {
+  height: auto;
+  overflow: visible;
+  pointer-events: auto;
+  cursor: move; /* fallback if grab cursor is unsupported */
+  cursor: grab;
+  cursor: -moz-grab;
+  cursor: -webkit-grab;
+}
+
+.receipt-container.open .receipt:active {
+  cursor: grabbing;
+  cursor: -moz-grabbing;
+  cursor: -webkit-grabbing;
+}
+
+.open .receipt-content {
+  height: auto;
+  max-width: 700px;
+  overflow: hidden;
+}
+
+@media screen and (max-width: 400px) {
+  .receipt-container.open {
+    padding: 20px 8px;
+    left: 0 !important;
+  }
+}
