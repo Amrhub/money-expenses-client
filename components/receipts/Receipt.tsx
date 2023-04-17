@@ -66,6 +66,7 @@ const Receipt = ({ receipt }: IProps) => {
             p: 1,
             bgcolor: isSelected ? 'grey.200' : 'secondary.main',
             color: isSelected ? 'grey.900' : 'grey.100',
+            borderRadius: '40000px',
           }}
           className='receipt'
           elevation={0}
@@ -77,6 +78,8 @@ const Receipt = ({ receipt }: IProps) => {
           drag={isSelected ? 'y' : false}
           dragConstraints={constraints}
           onUpdate={checkZIndex}
+          whileHover={{ height: 60, scale: 1.03 }}
+          {...(isSelected && { whileHover: { height: 'auto', scale: 1 } })}
         >
           <Stack
             direction='row'
@@ -101,6 +104,11 @@ const Receipt = ({ receipt }: IProps) => {
               {new Intl.DateTimeFormat().format(new Date(receipt.createdAt))}
             </Typography>
           </Stack>
+          {!isSelected && (
+            <Typography align='center' mt={1}>
+              Total: {new Intl.NumberFormat().format(receiptTotal(receipt))}
+            </Typography>
+          )}
           <Table sx={{ color: 'inherit' }} className='receipt-table'>
             <TableHead>
               <TableRow

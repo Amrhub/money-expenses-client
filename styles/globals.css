@@ -85,7 +85,6 @@ input[type='number'] {
   height: 40px;
   overflow: hidden;
   cursor: pointer;
-  border-radius: 4000000px;
 }
 
 .receipt-container.open {
@@ -101,7 +100,7 @@ input[type='number'] {
 }
 
 .receipt-container.open .receipt {
-  height: auto;
+  height: auto !important;
   overflow: visible;
   pointer-events: auto;
   cursor: move; /* fallback if grab cursor is unsupported */
