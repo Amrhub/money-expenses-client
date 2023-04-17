@@ -16,7 +16,7 @@ export default async function MyHandler(req: NextApiRequest, res: NextApiRespons
     });
     res.json(accessToken.accessToken);
   } catch (error: any) {
-    console.log('🚀 ~ file: access_token.ts:19 ~ MyHandler ~ error:', error);
+    console.error('🚀 ~ file: access_token.ts:19 ~ MyHandler ~ error:', error);
     if (
       error.code === AccessTokenErrorCode.MISSING_SESSION ||
       error.code === AccessTokenErrorCode.EXPIRED_ACCESS_TOKEN

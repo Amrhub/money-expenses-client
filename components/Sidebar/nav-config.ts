@@ -5,7 +5,7 @@ export const navLinks = [
   },
   {
     name: 'Subscriptions & Bills',
-    path: '/subscriptions',
+    path: '/subscriptions-bills',
   },
   {
     name: 'Receipts',

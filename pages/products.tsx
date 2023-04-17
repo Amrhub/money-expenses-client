@@ -74,7 +74,7 @@ function Products() {
       </Head>
       <PageTitle text='My Products' />
       <Button variant='contained' startIcon={<AddIcon />} onClick={() => setOpen(true)}>
-        Add Product
+        Product
       </Button>
 
       <ProductModal

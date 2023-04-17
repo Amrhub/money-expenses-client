@@ -11,7 +11,7 @@ import {
 import React from 'react';
 import CancelIcon from '@mui/icons-material/Cancel';
 
-interface IProps {
+export interface MyModalProps {
   open: boolean;
   handleClose: () => void;
   children: React.ReactNode;
@@ -52,7 +52,7 @@ const MyModal = ({
   actionDisabled,
   desktopWidth = 500,
   mobileWidth = 350,
-}: IProps) => {
+}: MyModalProps) => {
   return (
     <Modal
       open={open}
