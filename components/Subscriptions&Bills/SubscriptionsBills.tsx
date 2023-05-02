@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Box, Tab, Tabs, Typography, useTheme } from '@mui/material';
 import { Receipt } from '@mui/icons-material';
 import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
-import { AnimatePresence, MotionProps, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 
 const SubscriptionsBills = () => {
   const [tabIndex, setTabIndex] = useState(0);
@@ -20,7 +20,7 @@ const SubscriptionsBills = () => {
           initial={{ y: 10, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: -10, opacity: 0 }}
-          transition={{ duration: 0.2, type: 'spring' }}
+          transition={{ duration: 0.3, type: 'spring' }}
         >
           <TabPanel value={tabIndex} index={0}>
             <Typography variant='h3'>Subscriptions</Typography>
