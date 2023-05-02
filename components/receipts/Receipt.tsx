@@ -52,7 +52,15 @@ const Receipt = ({ receipt }: IProps) => {
   const containerRef = useRef(null);
 
   return (
-    <Grid item xs={12} lg={3.926} md={5.9} component={motion.div} ref={containerRef}>
+    <Grid
+      item
+      xs={12}
+      lg={3.926}
+      md={5.9}
+      component={motion.div}
+      ref={containerRef}
+      sx={{ position: 'relative' }}
+    >
       <Overlay
         isSelected={isSelected}
         removeSelection={() => {
@@ -67,18 +75,34 @@ const Receipt = ({ receipt }: IProps) => {
             bgcolor: isSelected ? 'grey.200' : 'secondary.main',
             color: isSelected ? 'grey.900' : 'grey.100',
             borderRadius: '40000px',
+            '&:hover': {
+              boxShadow: !isSelected ? 12 : 0,
+            },
           }}
           className='receipt'
           elevation={0}
           component={motion.div}
-          onClick={() => setIsSelected(true)}
+          onClick={() => {
+            (cardRef.current as any).style.position = 'relative';
+            setIsSelected(true);
+          }}
           layout
           transition={{ layout: isSelected ? openSpring : closeSpring }}
           ref={cardRef}
           drag={isSelected ? 'y' : false}
           dragConstraints={constraints}
           onUpdate={checkZIndex}
-          whileHover={{ height: 60, scale: 1.03 }}
+          whileHover={{ height: 65, scale: 1.03, zIndex: 12 }}
+          onHoverStart={() => {
+            if (!(cardRef.current as any)?.style || isSelected) return;
+            (cardRef.current as any).style.position = 'absolute';
+          }}
+          onHoverEnd={() => {
+            setTimeout(() => {
+              if (!(cardRef.current as any)?.style || isSelected) return;
+              (cardRef.current as any).style.position = 'relative';
+            }, 250);
+          }}
           {...(isSelected && { whileHover: { height: 'auto', scale: 1 } })}
         >
           <Stack
@@ -106,7 +130,7 @@ const Receipt = ({ receipt }: IProps) => {
           </Stack>
           {!isSelected && (
             <Typography align='center' mt={1}>
-              Total: {new Intl.NumberFormat().format(receiptTotal(receipt))}
+              Receipt Total: {new Intl.NumberFormat().format(receiptTotal(receipt))} L.E
             </Typography>
           )}
           <Table sx={{ color: 'inherit' }} className='receipt-table'>
