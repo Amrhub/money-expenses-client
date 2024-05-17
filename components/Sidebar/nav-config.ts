@@ -11,8 +11,4 @@ export const navLinks = [
     name: 'Receipts',
     path: '/receipts',
   },
-  {
-    name: 'Purchases',
-    path: '/purchases',
-  },
 ];
