@@ -19,6 +19,8 @@ import request from '@/axios';
 import { useStore } from '@/store/store';
 import PageTitle from '@/components/pageTitle/PageTitle';
 import { useUser } from '@auth0/nextjs-auth0/client';
+import { Button as ButtonShadcn } from '@/components/ui/button';
+import { ThemeToggler } from '@/components/ui/theme-toggler';
 
 function Products() {
   const queryClient = useQueryClient();
@@ -76,6 +78,11 @@ function Products() {
       <Button variant='contained' startIcon={<AddIcon />} onClick={() => setOpen(true)}>
         Product
       </Button>
+
+      <ButtonShadcn size='default' variant='ghost'>
+        Test Shadcn UI
+      </ButtonShadcn>
+      <ThemeToggler />
 
       <ProductModal
         open={open}
