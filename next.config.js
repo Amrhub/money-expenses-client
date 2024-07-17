@@ -9,6 +9,9 @@ const nextConfig = {
     AUTH0_AUDIENCE: process.env.AUTH0_AUDIENCE,
     AUTH0_SECRET: process.env.AUTH0_SECRET,
   },
+  images: {
+    domains: ['lh3.googleusercontent.com']
+  },
   reactStrictMode: true,
   redirects: async () => {
     return [

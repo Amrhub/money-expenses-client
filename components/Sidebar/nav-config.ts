@@ -1,14 +1,14 @@
 export const navLinks = [
   {
-    name: 'My Products',
+    name: 'Products',
     path: '/products',
-  },
-  {
-    name: 'Subscriptions & Bills',
-    path: '/subscriptions-bills',
   },
   {
     name: 'Receipts',
     path: '/receipts',
+  },
+  {
+    name: 'Subscriptions & Bills',
+    path: '/subscriptions-bills',
   },
 ];

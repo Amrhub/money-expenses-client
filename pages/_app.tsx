@@ -10,6 +10,7 @@ import LoaderModal from '@/components/modals/loader/LoaderModal';
 import { Inter as FontSans } from 'next/font/google';
 import { cn } from '@/lib/utils';
 import { ThemeProvider as ThemeProviderSU } from '@/components/theme-provider';
+import MainNav from '@/components/main-nav/main-nav';
 
 const fontSans = FontSans({
   subsets: ['latin'],
@@ -46,16 +47,9 @@ function App({ Component, pageProps }: AppProps) {
           <ThemeProvider theme={theme}>
             <QueryClientProvider client={queryClient}>
               <CssBaseline />
-              <Sidebar />
+              <MainNav />
               <LoaderModal />
-              <Box
-                component='main'
-                sx={{
-                  ml: { xs: 0, sm: `${drawerWidth}px` },
-                  paddingBlock: '24px',
-                  paddingInline: '32px',
-                }}
-              >
+              <Box component='main' className='px-4 pt-4'>
                 <Component {...pageProps} />
               </Box>
             </QueryClientProvider>

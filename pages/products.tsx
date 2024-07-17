@@ -13,14 +13,19 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { useState, useEffect } from 'react';
 import ProductModal from '@/components/modals/product/ProductModal';
 import { Product } from '@/dto/product.dto';
-import { withPageAuthRequired } from '@auth0/nextjs-auth0';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import request from '@/axios';
 import { useStore } from '@/store/store';
 import PageTitle from '@/components/pageTitle/PageTitle';
-import { useUser } from '@auth0/nextjs-auth0/client';
-import { Button as ButtonShadcn } from '@/components/ui/button';
-import { ThemeToggler } from '@/components/ui/theme-toggler';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { Button as ButtonCN } from '@/components/ui/button';
 
 function Products() {
   const queryClient = useQueryClient();
@@ -74,15 +79,42 @@ function Products() {
         <meta name='description' content='A list of products I purchase regularly' />
         <meta name='viewport' content='width=device-width, initial-scale=1' />
       </Head>
-      <PageTitle text='My Products' />
+
+      <PageTitle text='Products' />
       <Button variant='contained' startIcon={<AddIcon />} onClick={() => setOpen(true)}>
         Product
       </Button>
 
-      <ButtonShadcn size='default' variant='ghost'>
-        Test Shadcn UI
-      </ButtonShadcn>
-      <ThemeToggler />
+      <Dialog>
+        <DialogTrigger asChild>
+          <ButtonCN variant='outline'>Edit Profile</ButtonCN>
+        </DialogTrigger>
+        <DialogContent className='sm:max-w-[425px]'>
+          <DialogHeader>
+            <DialogTitle>Edit profile</DialogTitle>
+            <DialogDescription>
+              Make changes to your profile here. Click save when you're done.
+            </DialogDescription>
+          </DialogHeader>
+          <div className='grid gap-4 py-4'>
+            <div className='grid grid-cols-4 items-center gap-4'>
+              <Label htmlFor='name' className='text-right'>
+                Name
+              </Label>
+              <Input id='name' defaultValue='Pedro Duarte' className='col-span-3' />
+            </div>
+            <div className='grid grid-cols-4 items-center gap-4'>
+              <Label htmlFor='username' className='text-right'>
+                Username
+              </Label>
+              <Input id='username' defaultValue='@peduarte' className='col-span-3' />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button type='submit'>Save changes</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <ProductModal
         open={open}
