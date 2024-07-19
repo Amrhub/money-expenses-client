@@ -1,6 +1,5 @@
 import { useStore } from '@/store/store';
-import { Box, CircularProgress, Modal } from '@mui/material';
-import React from 'react';
+import { CircularProgress, Modal } from '@mui/material';
 
 const LoaderModal = () => {
   const showLoader = useStore((state) => state.showLoader);
