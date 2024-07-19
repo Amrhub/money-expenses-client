@@ -128,7 +128,7 @@ function Products() {
         product={selectedProduct}
       />
 
-      <div className='mt-4'>
+      <div className='my g-4'>
         <DataTable
           columns={columns}
           data={response?.products ?? []}
