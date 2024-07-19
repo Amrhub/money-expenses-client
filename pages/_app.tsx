@@ -11,6 +11,7 @@ import { Inter as FontSans } from 'next/font/google';
 import { cn } from '@/lib/utils';
 import { ThemeProvider as ThemeProviderSU } from '@/components/theme-provider';
 import MainNav from '@/components/main-nav/main-nav';
+import { Toaster } from '@/components/ui/toaster';
 
 const fontSans = FontSans({
   subsets: ['latin'],
@@ -52,6 +53,7 @@ function App({ Component, pageProps }: AppProps) {
               <Box component='main' className='px-4 pt-4'>
                 <Component {...pageProps} />
               </Box>
+              <Toaster />
             </QueryClientProvider>
           </ThemeProvider>
         </ThemeProviderSU>

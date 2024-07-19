@@ -36,7 +36,7 @@ const MainNav = () => {
 
   return (
     <header className='flex h-16 items-center px-4 border-b'>
-      <section className='mr-4'>
+      <section className='mr-4 flex'>
         <Logo />
       </section>
 
@@ -91,15 +91,18 @@ const MainNav = () => {
               </SheetTitle>
               <SheetDescription className='flex items-center gap-4 !mt-6'>
                 <UserAvatar userPicture={user.picture} />{' '}
-                <span className='flex flex-col'>
-                  <span className='text-sm font-bold leading-none text-left mb-2'>
+                <span className='flex flex-col max-w-[170px]'>
+                  <span className='text-sm font-bold leading-none text-left mb-2 text-ellipsis'>
                     Hi, {user.name} 👋🏻
                   </span>
-                  <span className='text-xs leading-none text-muted-foreground'>{user.email}</span>
+                  <span className='text-xs leading-none text-muted-foreground text-ellipsis'>
+                    {user.email}
+                  </span>
                 </span>
                 <span className='ml-auto flex gap-2 items-center'>
                   <ThemeToggler />
-                  <Button variant='destructive' onClick={() => logOut(router)}>
+
+                  <Button variant='ghost' onClick={() => logOut(router)}>
                     <LogOut className='h-4 w-4' />
                   </Button>
                 </span>

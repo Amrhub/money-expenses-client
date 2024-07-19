@@ -1,5 +1,4 @@
-import { Button, IconButton, Typography, Tooltip, Zoom } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
+import { IconButton, Typography, Tooltip, Zoom } from '@mui/material';
 import Head from 'next/head';
 import TableContainer from '@mui/material/TableContainer';
 import Table from '@mui/material/Table';
@@ -17,15 +16,6 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import request from '@/axios';
 import { useStore } from '@/store/store';
 import PageTitle from '@/components/pageTitle/PageTitle';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import { Button as ButtonCN } from '@/components/ui/button';
 
 function Products() {
   const queryClient = useQueryClient();
@@ -33,7 +23,6 @@ function Products() {
     page: 0,
     rowsPerPage: 5,
   });
-  const [open, setOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | undefined>();
 
   const {
@@ -81,45 +70,9 @@ function Products() {
       </Head>
 
       <PageTitle text='Products' />
-      <Button variant='contained' startIcon={<AddIcon />} onClick={() => setOpen(true)}>
-        Product
-      </Button>
-
-      <Dialog>
-        <DialogTrigger asChild>
-          <ButtonCN variant='outline'>Edit Profile</ButtonCN>
-        </DialogTrigger>
-        <DialogContent className='sm:max-w-[425px]'>
-          <DialogHeader>
-            <DialogTitle>Edit profile</DialogTitle>
-            <DialogDescription>
-              Make changes to your profile here. Click save when you're done.
-            </DialogDescription>
-          </DialogHeader>
-          <div className='grid gap-4 py-4'>
-            <div className='grid grid-cols-4 items-center gap-4'>
-              <Label htmlFor='name' className='text-right'>
-                Name
-              </Label>
-              <Input id='name' defaultValue='Pedro Duarte' className='col-span-3' />
-            </div>
-            <div className='grid grid-cols-4 items-center gap-4'>
-              <Label htmlFor='username' className='text-right'>
-                Username
-              </Label>
-              <Input id='username' defaultValue='@peduarte' className='col-span-3' />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button type='submit'>Save changes</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
 
       <ProductModal
-        open={open}
         handleClose={() => {
-          setOpen(false);
           setSelectedProduct(undefined);
         }}
         product={selectedProduct}
@@ -170,7 +123,6 @@ function Products() {
                       color='primary'
                       onClick={() => {
                         setSelectedProduct(product);
-                        setOpen(true);
                       }}
                     >
                       <EditIcon fontSize='inherit' />
