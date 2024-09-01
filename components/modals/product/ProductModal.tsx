@@ -1,11 +1,7 @@
-import { TextField, Stack, Tooltip, Alert, Snackbar } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import request from '@/axios';
 import { Product } from '@/dto/product.dto';
-import { useStore } from '@/store/store';
-import MyModal from '../myModal/MyModal';
-import { Info } from '@mui/icons-material';
 import {
   Dialog,
   DialogContent,
@@ -139,6 +135,7 @@ const ProductModal = ({ handleClose, product }: IProps) => {
             is recommended to use a descriptive name.
           </DialogDescription>
         </DialogHeader>
+
         <div className='grid gap-4 py-4'>
           <div className='grid grid-cols-4 items-center gap-4'>
             <Label htmlFor='name' className='text-left'>
