@@ -16,9 +16,11 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { Delete, Edit, MoreHorizontal } from 'lucide-react';
+import { useToast } from '@/components/ui/use-toast';
 
 function Products() {
   const queryClient = useQueryClient();
+  const { toast } = useToast();
   // const [pagination, setPagination] = useState({
   //   page: 0,
   //   rowsPerPage: 5,
@@ -37,9 +39,23 @@ function Products() {
         url: '/products',
         // ? pagination is currently implemented in the frontend only till further notice
         // params: { rowsPerPage: pagination.rowsPerPage, page: pagination.page },
-      }).then((res) => res),
+      })
+        .then((res) => res)
+        .catch((e) => {
+          if (typeof e === 'string' && e === 'Network Error') {
+            toast({
+              title: 'Error',
+              description: 'Server is down, please try again later',
+              variant: 'destructive',
+            });
+          }
+
+          // to prevent the error (Query data cannot be undefined. Please make sure to return a value other than undefined from your query function. Affected query key: ["products"])
+          return { products: [], count: 0 };
+        }),
     cacheTime: 1 * 60 * 60 * 1000,
     staleTime: 1 * 60 * 60 * 1000,
+    retry: 0,
   });
 
   const { mutate: deleteProduct, isLoading: isDeleteLoading } = useMutation(
@@ -55,8 +71,9 @@ function Products() {
     }
   );
 
-  if (isError) return <h1>Error</h1>;
-  if (!response && !isLoading) return <h1>Products not found</h1>;
+  if (isError) {
+    // TODO: Add UI for error state
+  }
 
   const columns: ColumnDef<Product>[] = [
     {
