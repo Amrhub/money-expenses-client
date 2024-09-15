@@ -13,8 +13,10 @@ const ListReceipts = () => {
     isLoading,
     isFetching,
     error,
-  } = useQuery(['receipts'], () => request<ReceiptDto[]>({ url: '/receipts' }), {
-    cacheTime: 1 * 60 * 60 * 1000,
+  } = useQuery({
+    queryKey: ['receipts'],
+    queryFn: () => request<ReceiptDto[]>({ url: '/receipts' }),
+    gcTime: 1 * 60 * 60 * 1000,
     staleTime: 1 * 60 * 60 * 1000,
   });
 

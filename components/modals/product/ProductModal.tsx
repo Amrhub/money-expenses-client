@@ -39,7 +39,7 @@ const ProductModal = ({ handleClose, product }: IProps) => {
   const queryClient = useQueryClient();
 
   const onSuccess = () => {
-    queryClient.invalidateQueries(['products']);
+    queryClient.invalidateQueries({ queryKey: ['products'] });
     resetThenClose();
   };
 
@@ -50,8 +50,8 @@ const ProductModal = ({ handleClose, product }: IProps) => {
     });
   };
 
-  const { mutate: editProduct } = useMutation(
-    (product: Product) =>
+  const { mutate: editProduct } = useMutation({
+    mutationFn: (product: Product) =>
       request({
         url: `/products/${product?.id}`,
         method: 'PATCH',
@@ -60,20 +60,18 @@ const ProductModal = ({ handleClose, product }: IProps) => {
           price: product.price,
         },
       }),
-    {
-      onSuccess,
-      onMutate: () => {
-        setIsLoading(true);
-      },
-      onSettled: () => {
-        setIsLoading(false);
-      },
-      onError,
-    }
-  );
+    onSuccess,
+    onMutate: () => {
+      setIsLoading(true);
+    },
+    onSettled: () => {
+      setIsLoading(false);
+    },
+    onError,
+  });
 
-  const { mutate: addProduct } = useMutation(
-    (product: Omit<Product, 'id'>) =>
+  const { mutate: addProduct } = useMutation({
+    mutationFn: (product: Omit<Product, 'id'>) =>
       request({
         url: `/products`,
         method: 'POST',
@@ -82,17 +80,15 @@ const ProductModal = ({ handleClose, product }: IProps) => {
           price: product.price,
         },
       }),
-    {
-      onSuccess,
-      onError,
-      onMutate: () => {
-        setIsLoading(true);
-      },
-      onSettled: () => {
-        setIsLoading(false);
-      },
-    }
-  );
+    onSuccess,
+    onError,
+    onMutate: () => {
+      setIsLoading(true);
+    },
+    onSettled: () => {
+      setIsLoading(false);
+    },
+  });
 
   const handleAction = () => {
     if (isEdit && product) {

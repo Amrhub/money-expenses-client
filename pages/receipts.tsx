@@ -1,31 +1,9 @@
 import PageTitle from '@/components/pageTitle/PageTitle';
-import React, { useEffect, useState, createRef, useRef } from 'react';
-import Button from '@mui/material/Button';
-import MyModal from '@/components/modals/myModal/MyModal';
-import Typography from '@mui/material/Typography';
-import {
-  Autocomplete,
-  TextField,
-  Stack,
-  Tooltip,
-  Divider,
-  Zoom,
-  IconButton,
-  InputAdornment,
-  Snackbar,
-  Alert,
-} from '@mui/material';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Product } from '@/dto/product.dto';
-import request from '@/axios';
-import { useStore } from '@/store/store';
-import { motion } from 'framer-motion';
-import { InfoOutlined } from '@mui/icons-material';
 import ListReceipts from '@/components/receipts/ListReceipts';
 import Head from 'next/head';
-import AddIcon from '@mui/icons-material/Add';
 import ReceiptModal from '@/components/modals/AddReceipt/ReceiptModal';
-import SubscriptionsBills from './subscriptions-bills';
+import { Autocomplete } from '@/components/ui/autocomplete';
+import { useState } from 'react';
 
 const itemsInitialState = [
   {
@@ -35,25 +13,58 @@ const itemsInitialState = [
   },
 ];
 
-const Receipts = () => {
-  const [open, setOpen] = useState(false);
+const FRAMEWORKS = [
+  {
+    value: 'next.js ID',
+    label: 'Next.js',
+  },
+  {
+    value: 'sveltekit',
+    label: 'SvelteKit',
+  },
+  {
+    value: 'nuxt.js',
+    label: 'Nuxt.js',
+  },
+  {
+    value: 'remix',
+    label: 'Remix',
+  },
+  {
+    value: 'astro',
+    label: 'Astro',
+  },
+  {
+    value: 'wordpress',
+    label: 'WordPress',
+  },
+  {
+    value: 'express.js',
+    label: 'Express.js',
+  },
+  {
+    value: 'nest.js',
+    label: 'Nest.js',
+  },
+];
 
+const Receipts = () => {
+  const [selected, setSelected] = useState<string | null>('');
   return (
     <>
       <Head>
         <title>Money Expenses | Receipts</title>
       </Head>
       <PageTitle text='Receipts' />
-      <Button
-        variant='contained'
-        startIcon={<AddIcon />}
-        onClick={() => {
-          setOpen(true);
+      selected: {selected ?? 'null'}
+      <Autocomplete
+        options={FRAMEWORKS}
+        selectedState={{
+          selected: selected ?? '',
+          setSelected,
         }}
-      >
-        Receipt
-      </Button>
-      <ReceiptModal open={open} handleClose={() => setOpen(false)} />
+      />
+      <ReceiptModal />
       <ListReceipts />
     </>
   );

@@ -1,28 +1,34 @@
-import React, { createRef, useEffect, useRef, useState } from 'react';
-import MyModal, { MyModalProps } from '../myModal/MyModal';
+import request from '@/axios';
+import { Button } from '@/components/ui/button';
 import {
-  Alert,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Separator } from '@/components/ui/separator';
+import { Product } from '@/dto/product.dto';
+import useProductsQuery from '@/queries/products.query';
+import { useStore } from '@/store/store';
+import {
   Autocomplete,
-  Button,
   Divider,
   IconButton,
-  InputAdornment,
-  Snackbar,
   Stack,
   TextField,
   Tooltip,
   Typography,
   Zoom,
-  createFilterOptions,
 } from '@mui/material';
-import { InfoOutlined } from '@mui/icons-material';
-import { motion } from 'framer-motion';
-import request from '@/axios';
-import { Product } from '@/dto/product.dto';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import AddIcon from '@mui/icons-material/Add';
-import DeleteIcon from '@mui/icons-material/Delete';
-import { useStore } from '@/store/store';
+import { motion } from 'framer-motion';
+import { Loader2, Plus, Trash } from 'lucide-react';
+import React, { useState } from 'react';
 
 const itemsInitialState = [
   {
@@ -32,43 +38,18 @@ const itemsInitialState = [
   },
 ];
 
-const filter = createFilterOptions<Product>();
-
-const ReceiptModal = ({ open, handleClose }: { open: boolean; handleClose: () => void }) => {
+const ReceiptModal = () => {
+  const [open, setOpen] = useState(false);
   const [receiptName, setReceiptName] = React.useState('');
   const [items, setItems] =
     useState<Array<{ id?: number; name: string; price: number; quantity: number }>>(
       itemsInitialState
     );
-  const modalBodyRef = createRef<HTMLDivElement>();
-  const shouldScroll = useRef(true);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const queryClient = useQueryClient();
 
-  useEffect(() => {
-    if (!shouldScroll.current) {
-      shouldScroll.current = true;
-      return;
-    }
-
-    modalBodyRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [items, modalBodyRef]);
-
-  const {
-    data: products,
-    isLoading,
-    isError,
-    isFetching,
-  } = useQuery({
-    queryKey: ['products'],
-    queryFn: () =>
-      request<{ products: Product[]; count: number }>({
-        url: '/products',
-      }).then((res) => res),
-    cacheTime: 1 * 60 * 60 * 1000,
-    staleTime: 1 * 60 * 60 * 1000,
-  });
+  const { data: products, isLoading, isError, isFetching } = useProductsQuery();
 
   const addInput = () => {
     setItems([...items, { name: '', price: 0, quantity: 0 }]);
@@ -79,12 +60,12 @@ const ReceiptModal = ({ open, handleClose }: { open: boolean; handleClose: () =>
     items.some((item) => item.name === '' || !item.price || !item.quantity);
 
   const handleModalClose = () => {
-    handleClose();
+    // handleClose();
     setItems(itemsInitialState);
     setReceiptName('');
   };
 
-  const { mutate: addReceipt, isLoading: isAddingReceipt } = useMutation({
+  const { mutate: addReceipt, isPending: isAddingReceipt } = useMutation({
     mutationFn: () =>
       request({
         url: '/receipts',
@@ -102,7 +83,9 @@ const ReceiptModal = ({ open, handleClose }: { open: boolean; handleClose: () =>
       useStore.setState({ showLoader: true });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['receipts']);
+      queryClient.invalidateQueries({
+        queryKey: ['receipts'],
+      });
       handleModalClose();
     },
     onError: (error: any) => {
@@ -118,66 +101,69 @@ const ReceiptModal = ({ open, handleClose }: { open: boolean; handleClose: () =>
     },
   });
 
+  {
+    /* <Snackbar
+    open={openSnackbar}
+    autoHideDuration={6000}
+    onClose={() => setOpenSnackbar(false)}
+    anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+  >
+    <Alert
+      onClose={() => setOpenSnackbar(false)}
+      severity='error'
+      sx={{ width: '100%' }}
+      variant='filled'
+    >
+      {snackbarMessage}
+    </Alert>
+  </Snackbar> */
+  }
   return (
-    <>
-      <Snackbar
-        open={openSnackbar}
-        autoHideDuration={6000}
-        onClose={() => setOpenSnackbar(false)}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+    <Dialog
+      open={open}
+      onOpenChange={(open) => {
+        if (!open) {
+          setOpen(false);
+          handleModalClose();
+        }
+      }}
+    >
+      <DialogTrigger asChild onClick={() => setOpen(true)}>
+        <Button className='uppercase '>
+          <Plus className='mr-2 w-5 h-5 ' />
+          Receipt
+        </Button>
+      </DialogTrigger>
+
+      <DialogContent
+        className={
+          'w-[var(--dialog-mobile-width)] lg:max-w-[var(--dialog-desktop-width)] rounded-md'
+        }
       >
-        <Alert
-          onClose={() => setOpenSnackbar(false)}
-          severity='error'
-          sx={{ width: '100%' }}
-          variant='filled'
-        >
-          {snackbarMessage}
-        </Alert>
-      </Snackbar>
-      <MyModal
-        title='Add Receipts'
-        handleClose={handleModalClose}
-        handleAction={() => addReceipt()}
-        actionText='Add'
-        actionDisabled={actionDisabled}
-        open={open}
-        desktopWidth={600}
-      >
+        <DialogHeader>
+          <DialogTitle>Add Receipts</DialogTitle>
+          <DialogDescription className='text-xs'>
+            {`Receipt's name should be unique & descriptive since it will be used to identify the
+                receipt in reports or other places.`}
+          </DialogDescription>
+        </DialogHeader>
+
         <Stack>
-          <TextField
-            label='Receipt Name'
-            variant='outlined'
-            value={receiptName}
-            onChange={(e) => setReceiptName(e.target.value)}
-            size='small'
-            sx={{ mb: 2 }}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position='start'>
-                  <Tooltip
-                    title="Receipt's name should be unique & descriptive since it will be used to identify the receipt in reports or other places."
-                    arrow
-                    TransitionComponent={Zoom}
-                    enterTouchDelay={0}
-                    leaveTouchDelay={5000}
-                    TransitionProps={{
-                      timeout: 250,
-                    }}
-                  >
-                    <IconButton
-                      sx={{
-                        p: 0,
-                      }}
-                      color='info'
-                    >
-                      <InfoOutlined />
-                    </IconButton>
-                  </Tooltip>
-                </InputAdornment>
-              ),
-            }}
-          />
+          <div className='flex w-full max-w-sm items-center gap-1.5'>
+            <Label htmlFor='name' className='text-left'>
+              Name
+            </Label>
+            <Input
+              className='w-full'
+              placeholder='e.g. Careffour Receipt | 02-07-2024'
+              value={receiptName}
+              onChange={(e) => setReceiptName(e.target.value)}
+              id='name'
+            />
+          </div>
+
+          <Separator className='my-4' />
+
           <Typography variant='body1' color='initial'>
             Items
           </Typography>
@@ -192,6 +178,7 @@ const ReceiptModal = ({ open, handleClose }: { open: boolean; handleClose: () =>
                       renderInput={(params) => (
                         <TextField
                           {...params}
+                          className='text-red-500'
                           label='Name'
                           variant='outlined'
                           type='search'
@@ -299,14 +286,13 @@ const ReceiptModal = ({ open, handleClose }: { open: boolean; handleClose: () =>
                     />
                     <IconButton
                       onClick={() => {
-                        shouldScroll.current = false;
                         setItems(items.filter((_, i) => i !== index));
                       }}
                       color='error'
                       disableRipple
                       disabled={items.length === 1}
                     >
-                      <DeleteIcon />
+                      <Trash />
                     </IconButton>
                   </Stack>
                   {index + 1 !== items.length && (
@@ -315,18 +301,24 @@ const ReceiptModal = ({ open, handleClose }: { open: boolean; handleClose: () =>
                 </motion.div>
               ))}
           </motion.div>
-          <Button
-            variant='contained'
-            startIcon={<AddIcon />}
-            onClick={addInput}
-            sx={{ ml: 'auto' }}
-          >
+          <Button variant='default' onClick={addInput} className='ml-auto'>
+            <Plus className='mr-2 w-5 h-5' />
             Add Item
           </Button>
-          <div ref={modalBodyRef} />
         </Stack>
-      </MyModal>
-    </>
+
+        <DialogFooter>
+          <Button
+            type='submit'
+            variant='default'
+            onClick={() => addReceipt()}
+            disabled={actionDisabled}
+          >
+            {isLoading && <Loader2 className='mr-2 h-4 w-4 animate-spin' />} Add
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };
 

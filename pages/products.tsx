@@ -1,11 +1,7 @@
-import Head from 'next/head';
-import { useState } from 'react';
-import ProductModal from '@/components/modals/product/ProductModal';
-import { Product } from '@/dto/product.dto';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import request from '@/axios';
+import ProductModal from '@/components/modals/product/ProductModal';
 import PageTitle from '@/components/pageTitle/PageTitle';
-import { ColumnDef } from '@tanstack/react-table';
+import { Button } from '@/components/ui/button';
 import { DataTable } from '@/components/ui/data-table';
 import {
   DropdownMenu,
@@ -14,17 +10,19 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Button } from '@/components/ui/button';
-import { Delete, Edit, MoreHorizontal } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
+import { Product } from '@/dto/product.dto';
+import useProductsQuery from '@/queries/products.query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { ColumnDef } from '@tanstack/react-table';
+import { Delete, Edit, MoreHorizontal } from 'lucide-react';
+import Head from 'next/head';
+import { Suspense, useState } from 'react';
 
 function Products() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  // const [pagination, setPagination] = useState({
-  //   page: 0,
-  //   rowsPerPage: 5,
-  // });
+
   const [selectedProduct, setSelectedProduct] = useState<Product | undefined>();
 
   const {
@@ -32,44 +30,31 @@ function Products() {
     isLoading,
     isError,
     isFetching,
-  } = useQuery({
-    queryKey: ['products'],
-    queryFn: () =>
-      request<{ products: Product[]; count: number }>({
-        url: '/products',
-        // ? pagination is currently implemented in the frontend only till further notice
-        // params: { rowsPerPage: pagination.rowsPerPage, page: pagination.page },
-      })
-        .then((res) => res)
-        .catch((e) => {
-          if (typeof e === 'string' && e === 'Network Error') {
-            toast({
-              title: 'Error',
-              description: 'Server is down, please try again later',
-              variant: 'destructive',
-            });
-          }
-
-          // to prevent the error (Query data cannot be undefined. Please make sure to return a value other than undefined from your query function. Affected query key: ["products"])
-          return { products: [], count: 0 };
-        }),
-    cacheTime: 1 * 60 * 60 * 1000,
-    staleTime: 1 * 60 * 60 * 1000,
+  } = useProductsQuery({
     retry: 0,
+    onError: (e) => {
+      if (typeof e === 'string' && e === 'Network Error') {
+        toast({
+          title: 'Error',
+          description: 'Server is down, please try again later',
+          variant: 'destructive',
+        });
+      }
+    },
   });
 
-  const { mutate: deleteProduct, isLoading: isDeleteLoading } = useMutation(
-    (id: number) =>
+  const { mutate: deleteProduct, isPending: isDeleteLoading } = useMutation({
+    mutationFn: (id: number) =>
       request({
         url: `/products/${id}`,
         method: 'DELETE',
       }),
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries(['products']);
-      },
-    }
-  );
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['products'],
+      });
+    },
+  });
 
   if (isError) {
     // TODO: Add UI for error state
@@ -146,11 +131,13 @@ function Products() {
       />
 
       <div className='my-4'>
-        <DataTable
-          columns={columns}
-          data={response?.products ?? []}
-          isLoading={isLoading || isFetching || isDeleteLoading}
-        />
+        <Suspense fallback={<div>Loading...</div>}>
+          <DataTable
+            columns={columns}
+            data={response?.products ?? []}
+            isLoading={isLoading || isFetching || isDeleteLoading}
+          />
+        </Suspense>
       </div>
     </>
   );
