@@ -133,13 +133,11 @@ function ProductsPage() {
       />
 
       <div className='my-4'>
-        <Suspense fallback={<div>Loading...</div>}>
-          <DataTable
-            columns={columns}
-            data={response?.products ?? []}
-            isLoading={isLoading || isFetching || isDeleteLoading}
-          />
-        </Suspense>
+        <DataTable
+          columns={columns}
+          data={response?.products ?? []}
+          isLoading={isLoading || isFetching || isDeleteLoading}
+        />
       </div>
     </>
   );
