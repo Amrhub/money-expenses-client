@@ -1,3 +1,5 @@
+'use client';
+
 import SubscriptionsBills from '@/components/Subscriptions&Bills/SubscriptionsBills';
 import SubscriptionBillModal from '@/components/modals/SubscriptionBillModal/SubscriptionBillModal';
 import PageTitle from '@/components/pageTitle/PageTitle';

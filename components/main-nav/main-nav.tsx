@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import { navLinks } from '../Sidebar/nav-config';
 import { usePathname, useRouter } from 'next/navigation';

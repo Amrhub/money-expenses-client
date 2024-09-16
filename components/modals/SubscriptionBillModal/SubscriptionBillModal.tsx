@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import MyModal from '../myModal/MyModal';
 import { FormControl, InputLabel, MenuItem, Select, Stack, TextField } from '@mui/material';

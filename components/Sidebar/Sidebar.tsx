@@ -1,22 +1,23 @@
+'use client';
 import { useUser } from '@auth0/nextjs-auth0/client';
+import LogoutIcon from '@mui/icons-material/Logout';
 import {
+  Box,
   Drawer,
-  Typography,
+  IconButton,
+  ListItemButton,
   Stack,
   styled,
-  ListItemButton,
-  useMediaQuery,
   SwipeableDrawer,
-  IconButton,
-  Box,
+  Typography,
+  useMediaQuery,
 } from '@mui/material';
 import { blueGrey } from '@mui/material/colors';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
+import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { navLinks } from './nav-config';
-import LogoutIcon from '@mui/icons-material/Logout';
 
 export const drawerWidth = 256;
 
@@ -25,7 +26,7 @@ const NavLinks = styled('div')(({ theme }) => ({
 }));
 
 const Sidebar = () => {
-  const router = useRouter();
+  const pathname = usePathname();
   const isDesktop = useMediaQuery('(min-width: 600px)');
   const [open, setOpen] = useState(false);
   const { user } = useUser();
@@ -47,10 +48,7 @@ const Sidebar = () => {
             style={{ textDecoration: 'none' }}
             onClick={() => setOpen(false)}
           >
-            <ListItemButton
-              selected={router.pathname === link.path}
-              sx={{ borderRadius: 1, py: 1.5 }}
-            >
+            <ListItemButton selected={pathname === link.path} sx={{ borderRadius: 1, py: 1.5 }}>
               <Typography variant='body1' color='initial'>
                 {link.name}
               </Typography>

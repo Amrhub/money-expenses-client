@@ -1,3 +1,5 @@
+'use client';
+
 import request from '@/axios';
 import { Button } from '@/components/ui/button';
 import {

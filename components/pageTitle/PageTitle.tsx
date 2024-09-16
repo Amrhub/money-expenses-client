@@ -1,5 +1,5 @@
-import React from 'react';
-import { Typography, Divider } from '@mui/material';
+'use client';
+
 import { Separator } from '../ui/separator';
 
 interface IProps {

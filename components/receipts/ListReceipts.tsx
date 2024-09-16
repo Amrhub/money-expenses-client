@@ -1,3 +1,5 @@
+'use client';
+
 import request from '@/axios';
 import { ReceiptDto } from '@/dto/receipt.dto';
 import { useStore } from '@/store/store';

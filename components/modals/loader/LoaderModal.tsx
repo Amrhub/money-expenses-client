@@ -1,3 +1,5 @@
+'use client';
+
 import { useStore } from '@/store/store';
 import { CircularProgress, Modal } from '@mui/material';
 

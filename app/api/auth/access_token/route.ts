@@ -1,6 +1,6 @@
-import { NextApiRequest, NextApiResponse } from 'next';
 // pages/api/my-handler.js
-import { getAccessToken, Session, AccessTokenErrorCode } from '@auth0/nextjs-auth0';
+import { AccessTokenErrorCode, getAccessToken } from '@auth0/nextjs-auth0';
+import { NextResponse } from 'next/server';
 
 // const afterRefresh = (req: NextApiRequest, res: NextApiResponse, session: Session) => {
 //   // session.user.customProperty = 'foo';
@@ -8,19 +8,18 @@ import { getAccessToken, Session, AccessTokenErrorCode } from '@auth0/nextjs-aut
 //   return session;
 // };
 
-export default async function MyHandler(req: NextApiRequest, res: NextApiResponse) {
+export async function GET(req: Request, res: Response) {
+  console.log(`🚀 ~ GET ~ req:`, req)
   try {
-    const accessToken = await getAccessToken(req, res, {
-      // refresh: true,
-      // afterRefresh,
-    });
-    res.json(accessToken.accessToken);
+    const {accessToken} = await getAccessToken();
+    return NextResponse.json(accessToken);
   } catch (error: any) {
     console.error('🚀 ~ file: access_token.ts:19 ~ MyHandler ~ error:', error);
     if (
       error.code === AccessTokenErrorCode.MISSING_SESSION ||
       error.code === AccessTokenErrorCode.EXPIRED_ACCESS_TOKEN
     )
-      res.status(401).json({ error: 'Missing session' });
+      // res.status(401).json({ error: 'Missing session' });
+      return NextResponse.error();
   }
 }

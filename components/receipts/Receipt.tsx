@@ -1,3 +1,5 @@
+'use client';
+
 import { ReceiptDto } from '@/dto/receipt.dto';
 import { useScrollConstraints } from '@/utils/use-scroll-constraints';
 import {

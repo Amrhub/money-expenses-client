@@ -1,3 +1,5 @@
+'use client';
+
 import PageTitle from '@/components/pageTitle/PageTitle';
 import ListReceipts from '@/components/receipts/ListReceipts';
 import Head from 'next/head';

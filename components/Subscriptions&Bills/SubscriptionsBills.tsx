@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState } from 'react';
 import { Box, Tab, Tabs, Typography, useTheme } from '@mui/material';
 import { Receipt } from '@mui/icons-material';

@@ -33,8 +33,6 @@ const useProductsQuery = (options?: OptionsWithoutQuery<IProductsQuery>) => {
   return useQuery({
     queryKey: ['products'],
     queryFn: () => fetchProducts(options),
-    gcTime: 1 * 60 * 60 * 1000,
-    staleTime: 60_000,
     ...options,
   });
 };
