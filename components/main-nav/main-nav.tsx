@@ -34,7 +34,7 @@ const MainNav = () => {
   const router = useRouter();
   const { user } = useUser();
 
-  if (!user) return null;
+  // if (!user) return null;
 
   return (
     <header className='flex h-16 items-center px-4 border-b'>
@@ -60,12 +60,12 @@ const MainNav = () => {
 
         <DropdownMenu>
           <DropdownMenuTrigger className='rounded-full'>
-            <UserAvatar userPicture={user.picture} />
+            <UserAvatar userPicture={user?.picture} />
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuLabel>
-              <p className='text-sm font-medium leading-none'>{user.name}</p>
-              <p className='text-xs leading-none text-muted-foreground'>{user.email}</p>
+              <p className='text-sm font-medium leading-none'>{user?.name}</p>
+              <p className='text-xs leading-none text-muted-foreground'>{user?.email}</p>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem
@@ -79,6 +79,7 @@ const MainNav = () => {
         </DropdownMenu>
       </div>
 
+      {/* Mobile side nav */}
       <div className='lg:hidden ml-auto'>
         <Sheet>
           <SheetTrigger asChild>
@@ -92,13 +93,13 @@ const MainNav = () => {
                 <Logo />
               </SheetTitle>
               <SheetDescription className='flex items-center gap-4 !mt-6'>
-                <UserAvatar userPicture={user.picture} />{' '}
+                <UserAvatar userPicture={user?.picture} />{' '}
                 <span className='flex flex-col max-w-[170px]'>
                   <span className='text-sm font-bold leading-none text-left mb-2 text-ellipsis'>
-                    Hi, {user.name} 👋🏻
+                    Hi, {user?.name} 👋🏻
                   </span>
                   <span className='text-xs leading-none text-muted-foreground text-ellipsis'>
-                    {user.email}
+                    {user?.email}
                   </span>
                 </span>
                 <span className='ml-auto flex gap-2 items-center'>
