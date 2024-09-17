@@ -9,7 +9,6 @@ import { NextResponse } from 'next/server';
 // };
 
 export async function GET(req: Request, res: Response) {
-  console.log(`🚀 ~ GET ~ req:`, req)
   try {
     const {accessToken} = await getAccessToken();
     return NextResponse.json(accessToken);

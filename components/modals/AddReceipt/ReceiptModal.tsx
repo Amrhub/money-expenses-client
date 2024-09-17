@@ -1,6 +1,7 @@
 'use client';
 
 import request from '@/axios';
+import { Autocomplete } from '@/components/ui/autocomplete';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -14,20 +15,12 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { Product } from '@/dto/product.dto';
+import { useToast } from '@/components/ui/use-toast';
+import { Item } from '@/models/receipt.model';
 import useProductsQuery from '@/queries/products.query';
 import { useStore } from '@/store/store';
-import {
-  Autocomplete,
-  Divider,
-  IconButton,
-  Stack,
-  TextField,
-  Tooltip,
-  Typography,
-  Zoom,
-} from '@mui/material';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { Loader2, Plus, Trash } from 'lucide-react';
 import React, { useState } from 'react';
@@ -41,17 +34,14 @@ const itemsInitialState = [
 ];
 
 const ReceiptModal = () => {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
   const [open, setOpen] = useState(false);
   const [receiptName, setReceiptName] = React.useState('');
-  const [items, setItems] =
-    useState<Array<{ id?: number; name: string; price: number; quantity: number }>>(
-      itemsInitialState
-    );
-  const [openSnackbar, setOpenSnackbar] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState('');
-  const queryClient = useQueryClient();
+  const [items, setItems] = useState<Item[]>(itemsInitialState);
 
-  const { data: products, isLoading, isError, isFetching } = useProductsQuery();
+  const { data: products, isLoading } = useProductsQuery();
 
   const addInput = () => {
     setItems([...items, { name: '', price: 0, quantity: 0 }]);
@@ -62,7 +52,7 @@ const ReceiptModal = () => {
     items.some((item) => item.name === '' || !item.price || !item.quantity);
 
   const handleModalClose = () => {
-    // handleClose();
+    setOpen(false);
     setItems(itemsInitialState);
     setReceiptName('');
   };
@@ -91,35 +81,22 @@ const ReceiptModal = () => {
       handleModalClose();
     },
     onError: (error: any) => {
+      const errReport = {
+        title: 'Error' as const,
+        description: 'Something went wrong',
+        variant: 'destructive' as const,
+      };
+
       if (error?.data?.message) {
-        setSnackbarMessage(error.data.message);
-      } else {
-        setSnackbarMessage('Something went wrong');
+        errReport.description = error.data.message;
       }
-      setOpenSnackbar(true);
+      toast(errReport);
     },
     onSettled: () => {
       useStore.setState({ showLoader: false });
     },
   });
 
-  {
-    /* <Snackbar
-    open={openSnackbar}
-    autoHideDuration={6000}
-    onClose={() => setOpenSnackbar(false)}
-    anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-  >
-    <Alert
-      onClose={() => setOpenSnackbar(false)}
-      severity='error'
-      sx={{ width: '100%' }}
-      variant='filled'
-    >
-      {snackbarMessage}
-    </Alert>
-  </Snackbar> */
-  }
   return (
     <Dialog
       open={open}
@@ -150,7 +127,7 @@ const ReceiptModal = () => {
           </DialogDescription>
         </DialogHeader>
 
-        <Stack>
+        <section className='flex flex-col'>
           <div className='flex w-full max-w-sm items-center gap-1.5'>
             <Label htmlFor='name' className='text-left'>
               Name
@@ -166,92 +143,52 @@ const ReceiptModal = () => {
 
           <Separator className='my-4' />
 
-          <Typography variant='body1' color='initial'>
-            Items
-          </Typography>
+          <span>Items</span>
           <motion.div layout transition={{ type: 'spring' }}>
-            {items.length &&
+            {!!items.length &&
               items.map((item, index) => (
                 <motion.div key={item.name + index} layout='position'>
-                  <Stack direction={{ xs: 'column', sm: 'row' }} gap={2} my={1}>
+                  <div className='flex flex-col sm:flex-row gap-2 my-1'>
+                    {/* TODO: Fix this, How can we do array in react the proper */}
                     <Autocomplete
-                      disablePortal
+                      placeholder='Name'
+                      options={
+                        products?.products.map((product) => ({
+                          value: product.name,
+                          label: product.name,
+                        })) || []
+                      }
                       value={items[index].name}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          className='text-red-500'
-                          label='Name'
-                          variant='outlined'
-                          type='search'
-                          value={items[index].name}
-                          // save the value in the state on blur
-                          onBlur={(e) => {
-                            setItems((prev) => {
-                              const newItems = [...prev];
-                              newItems[index] = {
-                                ...newItems[index],
-                                name: e.target.value,
-                              };
-                              return newItems;
-                            });
-                          }}
-                        />
-                      )}
-                      options={products?.products?.map((product) => product.name) || []}
-                      size='small'
-                      disableClearable
-                      fullWidth
-                      freeSolo
-                      selectOnFocus
-                      clearOnBlur
-                      autoSelect
-                      loading={isLoading || isFetching}
-                      // Render options is used here to ellipsis the text and show a tooltip on hover
-                      renderOption={(params: any) => {
-                        return (
-                          <li {...params}>
-                            <Tooltip
-                              title={params.key}
-                              enterTouchDelay={0}
-                              arrow
-                              TransitionComponent={Zoom}
-                              TransitionProps={{ timeout: 250 }}
-                            >
-                              <Typography
-                                variant='body2'
-                                noWrap
-                                sx={{ maxWidth: { xs: '290px', sm: '190px' } }}
-                              >
-                                {params.key}
-                              </Typography>
-                            </Tooltip>
-                          </li>
-                        );
-                      }}
-                      onInputChange={(_event, value, reason) => {
-                        if (reason === 'input') return;
-                        const product = products?.products?.find(
-                          (product) => product.name === value
-                        );
-                        if (product) {
-                          setItems((prev) => {
-                            const newItems = [...prev];
+                      onChange={(value) => {
+                        setItems((prev) => {
+                          const newItems = [...prev];
+                          const product = products?.products.find(
+                            (product) => product.name === value
+                          );
+
+                          if (product) {
                             newItems[index] = {
                               id: product.id,
                               name: product.name,
                               price: product.price,
                               quantity: items[index].quantity || 1,
                             };
-                            return newItems;
-                          });
-                        }
+                          } else {
+                            newItems[index] = {
+                              ...newItems[index],
+                              name: value ?? '',
+                            };
+                          }
+                          return newItems;
+                        });
                       }}
                     />
-                    <TextField
-                      label='Price'
-                      variant='outlined'
-                      size='small'
+
+                    <Input
+                      type='number'
+                      id='price'
+                      className='[&::-webkit-inner-spin-button]:appearance-none'
+                      placeholder='Price'
                       value={items[index].price === 0 ? '' : items[index].price}
                       onChange={(e) => {
                         setItems((prev) => {
@@ -267,10 +204,12 @@ const ReceiptModal = () => {
                         });
                       }}
                     />
-                    <TextField
-                      label='Quantity'
-                      variant='outlined'
-                      size='small'
+
+                    <Input
+                      type='number'
+                      id='quantity'
+                      className='[&::-webkit-inner-spin-button]:appearance-none'
+                      placeholder='Quantity'
                       value={items[index].quantity === 0 ? '' : items[index].quantity}
                       onChange={(e) => {
                         setItems((prev) => {
@@ -286,20 +225,19 @@ const ReceiptModal = () => {
                         });
                       }}
                     />
-                    <IconButton
+
+                    <Button
+                      variant='ghost'
+                      size='icon'
                       onClick={() => {
                         setItems(items.filter((_, i) => i !== index));
                       }}
-                      color='error'
-                      disableRipple
                       disabled={items.length === 1}
                     >
-                      <Trash />
-                    </IconButton>
-                  </Stack>
-                  {index + 1 !== items.length && (
-                    <Divider sx={{ display: { xs: 'block', sm: 'none' } }} color='blue' />
-                  )}
+                      <Trash className='h-4 w-4' />
+                    </Button>
+                  </div>
+                  {index + 1 !== items.length && <Separator className='sm:hidden' />}
                 </motion.div>
               ))}
           </motion.div>
@@ -307,7 +245,7 @@ const ReceiptModal = () => {
             <Plus className='mr-2 w-5 h-5' />
             Add Item
           </Button>
-        </Stack>
+        </section>
 
         <DialogFooter>
           <Button

@@ -19,7 +19,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { ColumnDef } from '@tanstack/react-table';
 import { Delete, Edit, MoreHorizontal } from 'lucide-react';
 import Head from 'next/head';
-import { Suspense, useState } from 'react';
+import { useState } from 'react';
 
 function ProductsPage() {
   const queryClient = useQueryClient();

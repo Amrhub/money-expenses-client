@@ -4,7 +4,6 @@ import { Toaster } from '@/components/ui/toaster';
 import Providers from '@/lib/providers';
 import { Metadata } from 'next';
 import { Inter as FontSans } from 'next/font/google';
-import Head from 'next/head';
 import '/styles/globals.css';
 
 const fontSans = FontSans({
@@ -27,21 +26,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang='en'>
-      <Head>
-        <meta name='viewport' content='initial-scale=1, width=device-width' />
-        <link
-          rel='stylesheet'
-          href='https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap'
-        />
-      </Head>
       <body className={fontSans.variable}>
         <Providers>
           <MainNav />
           <LoaderModal />
-          <Toaster />
           <div className='px-4 pt-4 min-h-screen bg-background font-sans antialiased'>
             {children}
           </div>
+          <Toaster />
         </Providers>
       </body>
     </html>

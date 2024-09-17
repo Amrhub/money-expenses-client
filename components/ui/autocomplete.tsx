@@ -15,15 +15,17 @@ interface IProps<ValueType> {
   /**
    * The selected value of the autocomplete it can be user input not just the options
    */
-  selectedState: {
-    selected: ValueType;
-    setSelected: React.Dispatch<React.SetStateAction<ValueType | null>>;
-  };
+  value: ValueType | null;
+  onChange: (value: ValueType | null) => void;
+
+  placeholder?: string;
 }
 
 export function Autocomplete<ValueType extends string | number>({
   options,
-  selectedState: { selected, setSelected },
+  value,
+  onChange,
+  placeholder,
 }: IProps<ValueType>) {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const [open, setOpen] = React.useState(false);
@@ -39,8 +41,8 @@ export function Autocomplete<ValueType extends string | number>({
         switch (e.key) {
           case 'Delete':
           case 'Backspace':
-            if (input.value === '') {
-              setSelected(null);
+            if (options.find((option) => option.value === value)) {
+              onChange(null);
             }
             break;
           case 'Escape':
@@ -50,48 +52,53 @@ export function Autocomplete<ValueType extends string | number>({
         }
       }
     },
-    [setSelected]
+    [onChange, value, options]
   );
+
+  // TODO: when receipt items are fixed and working properly, see if this can be removed
+  React.useEffect(() => {
+    if (value) {
+      setInputValue(options.find((option) => option.value === value)?.label ?? value.toString());
+    }
+  }, [value, options]);
 
   const onBlur = () => {
     setOpen(false);
 
     // handle if the user input is not in the options list
     handleCustomUserInputTimeoutRef.current = setTimeout(() => {
-      if (
-        inputValue.length > 0 &&
-        !(selected && options.find((option) => option.value === selected))
-      ) {
-        setSelected(inputValue as ValueType);
+      if (inputValue.length > 0 && !(value && options.find((option) => option.value === value))) {
+        onChange(inputValue as ValueType);
       }
     });
   };
 
   const onOptionSelect = (option: (typeof options)[number]) => {
     setInputValue('');
-    setSelected(option.value);
+    onChange(option.value);
     inputRef.current?.blur();
     handleCustomUserInputTimeoutRef.current &&
       clearTimeout(handleCustomUserInputTimeoutRef.current);
   };
 
-  const selectedLabel = options.find((option) => option.value === selected)?.label;
+  const selectedLabel = options.find((option) => option.value === value)?.label;
   return (
     <Command onKeyDown={handleKeyDown} className='overflow-visible bg-transparent'>
       <div className='group rounded-md border border-input px-3 py-2 text-sm ring-offset-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2'>
         <div className='flex flex-wrap gap-1'>
-          {selectedLabel}
+          {/* // TODO: when receipt items are fixed and working properly, see if this can be uncommented */}
+          {/* {selectedLabel} */}
           {/* Avoid having the "Search" Icon */}
           <CommandPrimitive.Input
             ref={inputRef}
             value={inputValue}
             onValueChange={(value) => {
               setInputValue(value);
-              setSelected(null);
+              // onChange(null)
             }}
             onBlur={onBlur}
             onFocus={() => setOpen(true)}
-            placeholder={selectedLabel ? '' : 'Search'}
+            placeholder={selectedLabel ? '' : placeholder ?? 'Search'}
             className='ml-2 flex-1 bg-transparent outline-none placeholder:text-muted-foreground'
           />
         </div>
@@ -112,7 +119,7 @@ export function Autocomplete<ValueType extends string | number>({
                       onSelect={() => onOptionSelect(option)}
                       className='cursor-pointer'
                     >
-                      {selected === option.value ? (
+                      {value === option.value ? (
                         <Check className='mr-2 h-4 w-4 text-green-600' />
                       ) : (
                         <span className='mr-6' />
