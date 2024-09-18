@@ -5,6 +5,7 @@ import Providers from '@/lib/providers';
 import { Metadata } from 'next';
 import { Inter as FontSans } from 'next/font/google';
 import '/styles/globals.css';
+import { SignedOut, SignInButton, SignedIn, UserButton } from '@clerk/nextjs';
 
 const fontSans = FontSans({
   subsets: ['latin'],
@@ -28,6 +29,10 @@ export default function RootLayout({
     <html lang='en'>
       <body className={fontSans.variable}>
         <Providers>
+          {/* <SignedOut>
+            <SignInButton />
+          </SignedOut> */}
+
           <MainNav />
           <LoaderModal />
           <div className='px-4 pt-4 min-h-screen bg-background font-sans antialiased'>

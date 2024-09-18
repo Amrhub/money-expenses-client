@@ -1,6 +1,6 @@
 'use client';
 
-import request from '@/axios/interceptor';
+import request from '@/app/axios/interceptor';
 import { Autocomplete } from '@/components/ui/autocomplete';
 import { Button } from '@/components/ui/button';
 import {

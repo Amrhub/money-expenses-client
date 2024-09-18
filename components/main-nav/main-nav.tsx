@@ -28,6 +28,7 @@ import {
 import UserAvatar from '../ui/user-avatar';
 import Logo from '../ui/logo';
 import { Separator } from '../ui/separator';
+import { SignedIn, UserButton } from '@clerk/nextjs';
 
 const MainNav = () => {
   const pathname = usePathname();
@@ -58,7 +59,7 @@ const MainNav = () => {
       <div className='hidden ml-auto lg:flex gap-2 items-center'>
         <ThemeToggler />
 
-        <DropdownMenu>
+        {/* <DropdownMenu>
           <DropdownMenuTrigger className='rounded-full'>
             <UserAvatar userPicture={user?.picture} />
           </DropdownMenuTrigger>
@@ -76,7 +77,10 @@ const MainNav = () => {
               <span>Log out</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
-        </DropdownMenu>
+        </DropdownMenu> */}
+        <SignedIn>
+          <UserButton />
+        </SignedIn>
       </div>
 
       {/* Mobile side nav */}

@@ -1,4 +1,7 @@
+'use server'
+
 import axios, { AxiosRequestConfig } from 'axios';
+import { cookies } from 'next/headers';
 
 const client = axios.create({
   baseURL: process.env.API_BASE_URL,
@@ -38,6 +41,17 @@ const client = axios.create({
 //     return Promise.reject(error);
 //   }
 // );
+
+client.interceptors.request.use(
+  (req) => {
+    req.headers.Cookie = cookies().toString()
+
+    return req
+  },
+  (error) => {
+    return Promise.reject(error)
+  }
+)
 
 const request = <T>(options: AxiosRequestConfig): Promise<T | undefined> => {
   const onSuccess = (response: any) => {

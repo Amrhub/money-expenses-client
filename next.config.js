@@ -12,6 +12,8 @@ const nextConfig = {
     AUTH0_CLIENT_SECRET: process.env.AUTH0_CLIENT_SECRET,
     AUTH0_AUDIENCE: process.env.AUTH0_AUDIENCE,
     AUTH0_SECRET: process.env.AUTH0_SECRET,
+    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
+    CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
   },
   images: {
     domains: ['lh3.googleusercontent.com']

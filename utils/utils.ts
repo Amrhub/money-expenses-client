@@ -1,5 +1,5 @@
-import { UserProfile } from "@auth0/nextjs-auth0/client";
-import { AppRouterInstance } from "next/dist/shared/lib/app-router-context";
+import { UserProfile } from '@auth0/nextjs-auth0/client';
+import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
 
 export function getFirstLetterFromUser(user: UserProfile) {
   if (user.nickname) {

@@ -1,4 +1,4 @@
-import request from '@/axios/interceptor';
+import request from '@/app/axios/interceptor';
 import { Product } from '@/dto/product.dto';
 import { useQuery } from '@tanstack/react-query';
 import { OptionsWithoutQuery } from './utils.model';
