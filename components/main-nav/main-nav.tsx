@@ -1,22 +1,17 @@
 'use client';
 
-import Link from 'next/link';
-import { navLinks } from '../Sidebar/nav-config';
-import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { Button } from '../ui/button';
-import { ThemeToggler } from '../ui/theme-toggler';
-import { useUser } from '@auth0/nextjs-auth0/client';
-import { logOut } from '@/utils/utils';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '../ui/dropdown-menu';
-import { DropdownMenuItem } from '@radix-ui/react-dropdown-menu';
+import { SignedIn, SignOutButton, UserButton } from '@clerk/nextjs';
+import { dark } from '@clerk/themes';
 import { LogOut, Menu } from 'lucide-react';
+import { useTheme } from 'next-themes';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useState } from 'react';
+import { navLinks } from '../Sidebar/nav-config';
+import { Button } from '../ui/button';
+import Logo from '../ui/logo';
+import { Separator } from '../ui/separator';
 import {
   Sheet,
   SheetContent,
@@ -25,17 +20,12 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '../ui/sheet';
-import UserAvatar from '../ui/user-avatar';
-import Logo from '../ui/logo';
-import { Separator } from '../ui/separator';
-import { SignedIn, UserButton } from '@clerk/nextjs';
+import { ThemeToggler } from '../ui/theme-toggler';
 
 const MainNav = () => {
   const pathname = usePathname();
-  const router = useRouter();
-  const { user } = useUser();
-
-  // if (!user) return null;
+  const { theme } = useTheme();
+  const [isSheetOpened, setSheepOpened] = useState(false);
 
   return (
     <header className='flex h-16 items-center px-4 border-b'>
@@ -59,33 +49,35 @@ const MainNav = () => {
       <div className='hidden ml-auto lg:flex gap-2 items-center'>
         <ThemeToggler />
 
-        {/* <DropdownMenu>
-          <DropdownMenuTrigger className='rounded-full'>
-            <UserAvatar userPicture={user?.picture} />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuLabel>
-              <p className='text-sm font-medium leading-none'>{user?.name}</p>
-              <p className='text-xs leading-none text-muted-foreground'>{user?.email}</p>
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() => logOut(router)}
-              className='flex items-center hover:cursor-pointer'
-            >
-              <LogOut className='mr-1 h-4 w-4' />
-              <span>Log out</span>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu> */}
         <SignedIn>
-          <UserButton />
+          <UserButton
+            userProfileProps={{
+              appearance: {
+                baseTheme: theme === 'dark' ? dark : undefined,
+              },
+            }}
+            appearance={{
+              baseTheme: theme === 'dark' ? dark : undefined,
+            }}
+          />
         </SignedIn>
       </div>
 
       {/* Mobile side nav */}
       <div className='lg:hidden ml-auto'>
-        <Sheet>
+        <Sheet open={isSheetOpened} onOpenChange={setSheepOpened}>
+          <SignedIn>
+            <UserButton
+              userProfileProps={{
+                appearance: {
+                  baseTheme: theme === 'dark' ? dark : undefined,
+                },
+              }}
+              appearance={{
+                baseTheme: theme === 'dark' ? dark : undefined,
+              }}
+            />
+          </SignedIn>
           <SheetTrigger asChild>
             <Button variant='ghost'>
               <Menu />
@@ -97,21 +89,35 @@ const MainNav = () => {
                 <Logo />
               </SheetTitle>
               <SheetDescription className='flex items-center gap-4 !mt-6'>
-                <UserAvatar userPicture={user?.picture} />{' '}
-                <span className='flex flex-col max-w-[170px]'>
-                  <span className='text-sm font-bold leading-none text-left mb-2 text-ellipsis'>
-                    Hi, {user?.name} 👋🏻
-                  </span>
-                  <span className='text-xs leading-none text-muted-foreground text-ellipsis'>
-                    {user?.email}
-                  </span>
-                </span>
+                <SignedIn>
+                  <UserButton
+                    showName
+                    userProfileProps={{
+                      appearance: {
+                        baseTheme: theme === 'dark' ? dark : undefined,
+                      },
+                    }}
+                    appearance={{
+                      baseTheme: theme === 'dark' ? dark : undefined,
+                      elements: {
+                        userButtonBox: {
+                          flexDirection: 'row-reverse',
+                        },
+                        userButtonTrigger: {
+                          pointerEvents: 'none',
+                        },
+                      },
+                    }}
+                    userProfileUrl='/profile'
+                    userProfileMode='navigation'
+                  />
+                </SignedIn>
                 <span className='ml-auto flex gap-2 items-center'>
                   <ThemeToggler />
 
-                  <Button variant='ghost' onClick={() => logOut(router)}>
-                    <LogOut className='h-4 w-4' />
-                  </Button>
+                  <SignOutButton>
+                    <LogOut className='w-4 h-4' />
+                  </SignOutButton>
                 </span>
               </SheetDescription>
 
@@ -124,6 +130,9 @@ const MainNav = () => {
                       href={link.path}
                       key={link.path}
                       className={cn(pathname === link.path && 'font-semibold')}
+                      onClick={() => {
+                        setSheepOpened(false);
+                      }}
                     >
                       {link.name}
                     </Link>
