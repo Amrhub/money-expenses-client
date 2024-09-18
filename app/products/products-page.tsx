@@ -1,6 +1,6 @@
 'use client';
 
-import request from '@/axios';
+import request from '@/axios/interceptor';
 import ProductModal from '@/components/modals/product/ProductModal';
 import PageTitle from '@/components/pageTitle/PageTitle';
 import { Button } from '@/components/ui/button';

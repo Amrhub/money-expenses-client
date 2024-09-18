@@ -1,6 +1,6 @@
 'use client';
 
-import request from '@/axios';
+import request from '@/axios/interceptor';
 import { ReceiptDto } from '@/dto/receipt.dto';
 import { useStore } from '@/store/store';
 import { Grid } from '@mui/material';

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import request from '@/axios';
+import request from '@/axios/interceptor';
 import { Product } from '@/dto/product.dto';
 import {
   Dialog,

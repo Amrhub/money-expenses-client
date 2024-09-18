@@ -1,6 +1,6 @@
-import request from '@/axios';
+import request from '@/axios/interceptor';
 import { Product } from '@/dto/product.dto';
-import { UseBaseQueryOptions, useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { OptionsWithoutQuery } from './utils.model';
 
 interface IProductsQuery {
