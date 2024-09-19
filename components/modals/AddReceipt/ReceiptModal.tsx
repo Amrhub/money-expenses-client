@@ -9,11 +9,14 @@ import {
   DialogDescription,
   DialogFooter,
   DialogHeader,
+  DialogOverlay,
+  DialogPortal,
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/components/ui/use-toast';
 import { Item } from '@/models/receipt.model';
@@ -23,7 +26,7 @@ import { useStore } from '@/store/store';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { Loader2, Plus, Trash } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 const itemsInitialState = [
   {
@@ -40,11 +43,16 @@ const ReceiptModal = () => {
   const [open, setOpen] = useState(false);
   const [receiptName, setReceiptName] = React.useState('');
   const [items, setItems] = useState<Item[]>(itemsInitialState);
+  const receiptListDiv = useRef<HTMLDivElement>(null);
 
   const { data: products, isLoading } = useProductsQuery();
 
   const addInput = () => {
     setItems([...items, { name: '', price: 0, quantity: 0 }]);
+    // Differ the scroll to the next tick to allow the new item to be rendered
+    setTimeout(() => {
+      receiptListDiv.current?.scrollTo(0, receiptListDiv.current?.scrollHeight);
+    });
   };
 
   const actionDisabled =
@@ -116,145 +124,143 @@ const ReceiptModal = () => {
 
       <DialogContent
         className={
-          'w-[var(--dialog-mobile-width)] lg:max-w-[var(--dialog-desktop-width)] rounded-md'
+          'w-[var(--dialog-mobile-width)] lg:max-w-[var(--dialog-desktop-width)] rounded-md max-h-[98%] min-h-[70%] sm:min-h-[50%] overflow-hidden'
         }
       >
         <DialogHeader>
           <DialogTitle>Add Receipts</DialogTitle>
           <DialogDescription className='text-xs'>
             {`Receipt's name should be unique & descriptive since it will be used to identify the
-                receipt in reports or other places.`}
+                  receipt in reports or other places.`}
           </DialogDescription>
         </DialogHeader>
-
-        <section className='flex flex-col'>
-          <div className='flex w-full max-w-sm items-center gap-1.5'>
-            <Label htmlFor='name' className='text-left'>
-              Name
-            </Label>
-            <Input
-              className='w-full'
-              placeholder='e.g. Careffour Receipt | 02-07-2024'
-              value={receiptName}
-              onChange={(e) => setReceiptName(e.target.value)}
-              id='name'
-            />
-          </div>
-
-          <Separator className='my-4' />
-
-          <span>Items</span>
-          <motion.div layout transition={{ type: 'spring' }}>
-            {!!items.length &&
-              items.map((item, index) => (
-                <motion.div key={item.name + index} layout='position'>
-                  <div className='flex flex-col sm:flex-row gap-2 my-1'>
-                    {/* TODO: Fix this, How can we do array in react the proper */}
-                    <Autocomplete
-                      placeholder='Name'
-                      options={
-                        products?.products.map((product) => ({
-                          value: product.name,
-                          label: product.name,
-                        })) || []
-                      }
-                      value={items[index].name}
-                      onChange={(value) => {
-                        setItems((prev) => {
-                          const newItems = [...prev];
-                          const product = products?.products.find(
-                            (product) => product.name === value
-                          );
-
-                          if (product) {
-                            newItems[index] = {
-                              id: product.id,
-                              name: product.name,
-                              price: product.price,
-                              quantity: items[index].quantity || 1,
-                            };
-                          } else {
-                            newItems[index] = {
-                              ...newItems[index],
-                              name: value ?? '',
-                            };
-                          }
-                          return newItems;
-                        });
-                      }}
-                    />
-
-                    <Input
-                      type='number'
-                      id='price'
-                      className='[&::-webkit-inner-spin-button]:appearance-none'
-                      placeholder='Price'
-                      value={items[index].price === 0 ? '' : items[index].price}
-                      onChange={(e) => {
-                        setItems((prev) => {
-                          const newItems = [...prev];
+        {/* <section className='flex flex-col'> */}
+        <div className='flex w-full max-w-sm items-center gap-1.5'>
+          <Label htmlFor='name' className='text-left'>
+            Name
+          </Label>
+          <Input
+            className='w-full'
+            placeholder='e.g. Careffour Receipt | 02-07-2024'
+            value={receiptName}
+            onChange={(e) => setReceiptName(e.target.value)}
+            id='name'
+          />
+        </div>
+        <Separator className='my-4' />
+        <span>Items</span>
+        <motion.div
+          layout
+          transition={{ type: 'tween' }}
+          className='flex-1 overflow-y-auto scroll-smooth sm:scrollbar-none px-2'
+          ref={receiptListDiv}
+        >
+          {!!items.length &&
+            items.map((item, index) => (
+              <motion.div key={item.name + index} layout='position'>
+                <div className='flex gap-2 my-1'>
+                  {/* TODO: Fix this, How can we do array in react the proper */}
+                  <Autocomplete
+                    placeholder='Name'
+                    options={
+                      products?.products.map((product) => ({
+                        value: product.name,
+                        label: product.name,
+                      })) || []
+                    }
+                    value={items[index].name}
+                    onChange={(value) => {
+                      setItems((prev) => {
+                        const newItems = [...prev];
+                        const product = products?.products.find(
+                          (product) => product.name === value
+                        );
+                        if (product) {
+                          newItems[index] = {
+                            id: product.id,
+                            name: product.name,
+                            price: product.price,
+                            quantity: items[index].quantity || 1,
+                          };
+                        } else {
                           newItems[index] = {
                             ...newItems[index],
-                            price:
-                              isNaN(+e.target.value) || !isFinite(+e.target.value)
-                                ? newItems[index].price
-                                : +e.target.value,
+                            name: value ?? '',
                           };
-                          return newItems;
-                        });
-                      }}
-                    />
+                        }
+                        return newItems;
+                      });
+                    }}
+                  />
+                  <Input
+                    type='number'
+                    id='price'
+                    className='[&::-webkit-inner-spin-button]:appearance-none'
+                    placeholder='Price'
+                    value={items[index].price === 0 ? '' : items[index].price}
+                    onChange={(e) => {
+                      setItems((prev) => {
+                        const newItems = [...prev];
+                        newItems[index] = {
+                          ...newItems[index],
+                          price:
+                            isNaN(+e.target.value) || !isFinite(+e.target.value)
+                              ? newItems[index].price
+                              : +e.target.value,
+                        };
+                        return newItems;
+                      });
+                    }}
+                  />
+                  <Input
+                    type='number'
+                    id='quantity'
+                    className='[&::-webkit-inner-spin-button]:appearance-none'
+                    placeholder='Quantity'
+                    value={items[index].quantity === 0 ? '' : items[index].quantity}
+                    onChange={(e) => {
+                      setItems((prev) => {
+                        const newItems = [...prev];
+                        newItems[index] = {
+                          ...newItems[index],
+                          quantity:
+                            isNaN(+e.target.value) || !isFinite(+e.target.value)
+                              ? newItems[index].quantity
+                              : +e.target.value,
+                        };
+                        return newItems;
+                      });
+                    }}
+                  />
+                  <Button
+                    variant='ghost'
+                    size='icon'
+                    onClick={() => {
+                      setItems(items.filter((_, i) => i !== index));
+                    }}
+                    disabled={items.length === 1}
+                  >
+                    <Trash className='h-4 w-4' />
+                  </Button>
+                </div>
+                {index + 1 !== items.length && <Separator className='sm:hidden mb-4' />}
+              </motion.div>
+            ))}
+        </motion.div>
 
-                    <Input
-                      type='number'
-                      id='quantity'
-                      className='[&::-webkit-inner-spin-button]:appearance-none'
-                      placeholder='Quantity'
-                      value={items[index].quantity === 0 ? '' : items[index].quantity}
-                      onChange={(e) => {
-                        setItems((prev) => {
-                          const newItems = [...prev];
-                          newItems[index] = {
-                            ...newItems[index],
-                            quantity:
-                              isNaN(+e.target.value) || !isFinite(+e.target.value)
-                                ? newItems[index].quantity
-                                : +e.target.value,
-                          };
-                          return newItems;
-                        });
-                      }}
-                    />
-
-                    <Button
-                      variant='ghost'
-                      size='icon'
-                      onClick={() => {
-                        setItems(items.filter((_, i) => i !== index));
-                      }}
-                      disabled={items.length === 1}
-                    >
-                      <Trash className='h-4 w-4' />
-                    </Button>
-                  </div>
-                  {index + 1 !== items.length && <Separator className='sm:hidden' />}
-                </motion.div>
-              ))}
-          </motion.div>
-          <Button variant='default' onClick={addInput} className='ml-auto'>
-            <Plus className='mr-2 w-5 h-5' />
-            Add Item
-          </Button>
-        </section>
-
-        <DialogFooter>
+        <DialogFooter className='gap-2'>
           <Button
             type='submit'
             variant='default'
+            className='ml-auto'
             onClick={() => addReceipt()}
             disabled={actionDisabled}
           >
-            {isLoading && <Loader2 className='mr-2 h-4 w-4 animate-spin' />} Add
+            {isLoading && <Loader2 className='mr-2 h-4 w-4 animate-spin' />} Save
+          </Button>
+          <Button variant='default' onClick={addInput} className='ml-auto'>
+            <Plus className='mr-2 w-5 h-5' />
+            Add Item
           </Button>
         </DialogFooter>
       </DialogContent>
