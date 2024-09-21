@@ -9,24 +9,20 @@ import {
   DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogOverlay,
-  DialogPortal,
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/components/ui/use-toast';
 import { Item } from '@/models/receipt.model';
 import useProductsQuery from '@/queries/products.query';
-import { useStore } from '@/store/store';
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { Loader2, Plus, Trash } from 'lucide-react';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 
 const itemsInitialState = [
   {
@@ -55,10 +51,6 @@ const ReceiptModal = () => {
     });
   };
 
-  const actionDisabled =
-    receiptName.length === 0 ||
-    items.some((item) => item.name === '' || !item.price || !item.quantity);
-
   const handleModalClose = () => {
     setOpen(false);
     setItems(itemsInitialState);
@@ -79,9 +71,6 @@ const ReceiptModal = () => {
           })),
         },
       }).then((res) => res),
-    onMutate: () => {
-      useStore.setState({ showLoader: true });
-    },
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ['receipts'],
@@ -100,10 +89,12 @@ const ReceiptModal = () => {
       }
       toast(errReport);
     },
-    onSettled: () => {
-      useStore.setState({ showLoader: false });
-    },
   });
+
+  const actionDisabled =
+    isAddingReceipt ||
+    receiptName.length === 0 ||
+    items.some((item) => item.name === '' || !item.price || !item.quantity);
 
   return (
     <Dialog
@@ -256,9 +247,15 @@ const ReceiptModal = () => {
             onClick={() => addReceipt()}
             disabled={actionDisabled}
           >
-            {isLoading && <Loader2 className='mr-2 h-4 w-4 animate-spin' />} Save
+            {isAddingReceipt && <Loader2 className='mr-2 h-4 w-4 animate-spin' />} Save
           </Button>
-          <Button variant='default' onClick={addInput} className='ml-auto'>
+
+          <Button
+            variant='default'
+            onClick={addInput}
+            className='ml-auto'
+            disabled={isAddingReceipt}
+          >
             <Plus className='mr-2 w-5 h-5' />
             Add Item
           </Button>

@@ -1,5 +1,4 @@
 import MainNav from '@/components/main-nav/main-nav';
-import LoaderModal from '@/components/modals/loader/LoaderModal';
 import { Toaster } from '@/components/ui/toaster';
 import Providers from '@/lib/providers';
 import { Metadata } from 'next';
@@ -29,12 +28,7 @@ export default function RootLayout({
     <html lang='en'>
       <body className={fontSans.variable}>
         <Providers>
-          {/* <SignedOut>
-            <SignInButton />
-          </SignedOut> */}
-
           <MainNav />
-          <LoaderModal />
           <div className='px-4 pt-4 min-h-screen bg-background font-sans antialiased'>
             {children}
           </div>

@@ -2,10 +2,8 @@
 
 import request from '@/app/axios/interceptor';
 import { ReceiptDto } from '@/dto/receipt.dto';
-import { useStore } from '@/store/store';
 import { Grid } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
-import React, { useEffect } from 'react';
 import Receipt from './Receipt';
 
 const ListReceipts = () => {
@@ -21,10 +19,6 @@ const ListReceipts = () => {
     gcTime: 1 * 60 * 60 * 1000,
     staleTime: 1 * 60 * 60 * 1000,
   });
-
-  useEffect(() => {
-    useStore.setState({ showLoader: isLoading || isFetching });
-  }, [isLoading, isFetching]);
 
   if (isError) {
     console.error(error);
