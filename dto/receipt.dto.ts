@@ -7,6 +7,7 @@ export interface ReceiptDto {
     price: number;
     quantity: number;
   }>;
+  totalPrice: number;
   isDeleted: boolean;
   userId: string;
   createdAt: string;

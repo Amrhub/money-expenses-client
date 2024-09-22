@@ -1,5 +1,12 @@
 'use client';
 
+import {
+  NavigationMenu,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  navigationMenuTriggerStyle,
+} from '@/components/ui/navigation-menu';
 import { cn } from '@/lib/utils';
 import { SignedIn, SignOutButton, UserButton } from '@clerk/nextjs';
 import { dark } from '@clerk/themes';
@@ -33,19 +40,19 @@ const MainNav = () => {
         <Logo />
       </section>
 
-      <nav className='lg:flex hidden lg:flex-row items-center gap-4'>
-        {navLinks.map((link) => (
-          <Button variant='link' key={link.path} className='px-0'>
-            <Link
-              href={link.path}
-              key={link.path}
-              className={cn(pathname === link.path && 'font-semibold')}
-            >
-              {link.name}
-            </Link>
-          </Button>
-        ))}
-      </nav>
+      <NavigationMenu className='hidden lg:flex'>
+        <NavigationMenuList>
+          {navLinks.map((link) => (
+            <NavigationMenuItem key={link.path}>
+              <Link href={link.path} legacyBehavior passHref>
+                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                  {link.name}
+                </NavigationMenuLink>
+              </Link>
+            </NavigationMenuItem>
+          ))}
+        </NavigationMenuList>
+      </NavigationMenu>
       <div className='hidden ml-auto lg:flex gap-2 items-center'>
         <ThemeToggler />
 
@@ -123,22 +130,25 @@ const MainNav = () => {
 
               <Separator className='my-4' />
 
-              <nav className='flex flex-col gap-4 mt-4 items-start'>
-                {navLinks.map((link) => (
-                  <Button variant='link' key={link.path} className='px-0'>
-                    <Link
-                      href={link.path}
+              <NavigationMenu>
+                <NavigationMenuList className='flex-col space-x-0'>
+                  {navLinks.map((link) => (
+                    <NavigationMenuItem
                       key={link.path}
-                      className={cn(pathname === link.path && 'font-semibold')}
+                      className='self-start'
                       onClick={() => {
                         setSheepOpened(false);
                       }}
                     >
-                      {link.name}
-                    </Link>
-                  </Button>
-                ))}
-              </nav>
+                      <Link href={link.path} legacyBehavior passHref>
+                        <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                          {link.name}
+                        </NavigationMenuLink>
+                      </Link>
+                    </NavigationMenuItem>
+                  ))}
+                </NavigationMenuList>
+              </NavigationMenu>
             </SheetHeader>
           </SheetContent>
         </Sheet>

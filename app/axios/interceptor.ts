@@ -1,4 +1,4 @@
-'use server'
+'use server';
 
 import axios, { AxiosRequestConfig } from 'axios';
 import { cookies } from 'next/headers';
@@ -44,14 +44,14 @@ const client = axios.create({
 
 client.interceptors.request.use(
   (req) => {
-    req.headers.Cookie = cookies().toString()
+    req.headers.Cookie = cookies().toString();
 
-    return req
+    return req;
   },
   (error) => {
-    return Promise.reject(error)
+    return Promise.reject(error);
   }
-)
+);
 
 const request = <T>(options: AxiosRequestConfig): Promise<T | undefined> => {
   const onSuccess = (response: any) => {

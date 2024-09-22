@@ -27,10 +27,6 @@ const openSpring = { type: 'spring', stiffness: 200, damping: 30 };
 const closeSpring = { type: 'spring', stiffness: 300, damping: 35 };
 const distanceToDismiss = 100;
 
-const receiptTotal = (receipt: ReceiptDto) => {
-  return receipt.items.reduce((acc, item) => acc + item.price * item.quantity, 0);
-};
-
 const borderColorPalette = ['#22185c', '#312283', '#6043ff', '#312283'];
 let borderColorIndex = 0;
 
@@ -132,7 +128,7 @@ const Receipt = ({ receipt }: IProps) => {
           </Stack>
           {!isSelected && (
             <Typography align='center' mt={1}>
-              Receipt Total: {new Intl.NumberFormat().format(receiptTotal(receipt))} L.E
+              Receipt Total: {new Intl.NumberFormat().format(receipt.totalPrice)} L.E
             </Typography>
           )}
           <Table sx={{ color: 'inherit' }} className='receipt-table'>
@@ -194,7 +190,7 @@ const Receipt = ({ receipt }: IProps) => {
                   Total
                 </TableCell>
                 <TableCell align='center' sx={{ color: 'inherit' }}>
-                  {new Intl.NumberFormat().format(receiptTotal(receipt))}
+                  {new Intl.NumberFormat().format(receipt.totalPrice)}
                 </TableCell>
               </TableRow>
             </TableBody>
