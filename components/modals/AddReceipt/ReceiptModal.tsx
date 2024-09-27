@@ -136,6 +136,7 @@ const ReceiptModal = () => {
             value={receiptName}
             onChange={(e) => setReceiptName(e.target.value)}
             id='name'
+            autoComplete='receipt-name'
           />
         </div>
         <Separator className='my-4' />
@@ -143,13 +144,13 @@ const ReceiptModal = () => {
         <motion.div
           layout
           transition={{ type: 'tween' }}
-          className='flex-1 overflow-y-auto scroll-smooth sm:scrollbar-none px-2'
+          className='flex-1 overflow-y-auto scroll-smooth sm:scrollbar-none px-2 py-2'
           ref={receiptListDiv}
         >
           {!!items.length &&
             items.map((item, index) => (
               <motion.div key={item.name + index} layout='position'>
-                <div className='flex gap-2 my-1'>
+                <div className='flex flex-col sm:flex-row gap-1 sm:gap-2 sm:my-1'>
                   {/* TODO: Fix this, How can we do array in react the proper */}
                   <Autocomplete
                     placeholder='Name'
@@ -183,58 +184,60 @@ const ReceiptModal = () => {
                       });
                     }}
                   />
-                  <Input
-                    type='number'
-                    id='price'
-                    className='[&::-webkit-inner-spin-button]:appearance-none'
-                    placeholder='Price'
-                    value={items[index].price === 0 ? '' : items[index].price}
-                    onChange={(e) => {
-                      setItems((prev) => {
-                        const newItems = [...prev];
-                        newItems[index] = {
-                          ...newItems[index],
-                          price:
-                            isNaN(+e.target.value) || !isFinite(+e.target.value)
-                              ? newItems[index].price
-                              : +e.target.value,
-                        };
-                        return newItems;
-                      });
-                    }}
-                  />
-                  <Input
-                    type='number'
-                    id='quantity'
-                    className='[&::-webkit-inner-spin-button]:appearance-none'
-                    placeholder='Quantity'
-                    value={items[index].quantity === 0 ? '' : items[index].quantity}
-                    onChange={(e) => {
-                      setItems((prev) => {
-                        const newItems = [...prev];
-                        newItems[index] = {
-                          ...newItems[index],
-                          quantity:
-                            isNaN(+e.target.value) || !isFinite(+e.target.value)
-                              ? newItems[index].quantity
-                              : +e.target.value,
-                        };
-                        return newItems;
-                      });
-                    }}
-                  />
-                  <Button
-                    variant='ghost'
-                    size='icon'
-                    onClick={() => {
-                      setItems(items.filter((_, i) => i !== index));
-                    }}
-                    disabled={items.length === 1}
-                  >
-                    <Trash className='h-4 w-4' />
-                  </Button>
+                  <div className='flex gap-4 sm:gap-2'>
+                    <Input
+                      type='number'
+                      id='price'
+                      className='[&::-webkit-inner-spin-button]:appearance-none'
+                      placeholder='Price'
+                      value={items[index].price === 0 ? '' : items[index].price}
+                      onChange={(e) => {
+                        setItems((prev) => {
+                          const newItems = [...prev];
+                          newItems[index] = {
+                            ...newItems[index],
+                            price:
+                              isNaN(+e.target.value) || !isFinite(+e.target.value)
+                                ? newItems[index].price
+                                : +e.target.value,
+                          };
+                          return newItems;
+                        });
+                      }}
+                    />
+                    <Input
+                      type='number'
+                      id='quantity'
+                      className='[&::-webkit-inner-spin-button]:appearance-none'
+                      placeholder='Quantity'
+                      value={items[index].quantity === 0 ? '' : items[index].quantity}
+                      onChange={(e) => {
+                        setItems((prev) => {
+                          const newItems = [...prev];
+                          newItems[index] = {
+                            ...newItems[index],
+                            quantity:
+                              isNaN(+e.target.value) || !isFinite(+e.target.value)
+                                ? newItems[index].quantity
+                                : +e.target.value,
+                          };
+                          return newItems;
+                        });
+                      }}
+                    />
+                    <Button
+                      variant='ghost'
+                      size='icon'
+                      onClick={() => {
+                        setItems(items.filter((_, i) => i !== index));
+                      }}
+                      disabled={items.length === 1}
+                    >
+                      <Trash className='h-4 w-4' />
+                    </Button>
+                  </div>
                 </div>
-                {index + 1 !== items.length && <Separator className='sm:hidden mb-4' />}
+                {index + 1 !== items.length && <Separator className='sm:hidden my-4' />}
               </motion.div>
             ))}
         </motion.div>

@@ -109,6 +109,7 @@ const MainNav = () => {
                       elements: {
                         userButtonBox: {
                           flexDirection: 'row-reverse',
+                          color: 'hsl(var(--foreground))',
                         },
                         userButtonTrigger: {
                           pointerEvents: 'none',
