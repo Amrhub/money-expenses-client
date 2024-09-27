@@ -1,10 +1,9 @@
 import MainNav from '@/components/main-nav/main-nav';
 import { Toaster } from '@/components/ui/toaster';
 import Providers from '@/lib/providers';
-import { Metadata } from 'next';
+import { Metadata, Viewport } from 'next';
 import { Inter as FontSans } from 'next/font/google';
 import '/styles/globals.css';
-import { SignedOut, SignInButton, SignedIn, UserButton } from '@clerk/nextjs';
 
 const fontSans = FontSans({
   subsets: ['latin'],
@@ -17,13 +16,15 @@ export const metadata: Metadata = {
   keywords: 'money, expenses, income, track, finance, budget',
 };
 
-// FIXME Why App component gets re-rendered on every page change?
-export default function RootLayout({
-  // This will be populated with nested layouts or pages
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  // interactiveWidget: 'resizes-content',
+};
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang='en'>
       <body className={fontSans.variable}>
