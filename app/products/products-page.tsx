@@ -15,6 +15,7 @@ import {
 import { useToast } from '@/components/ui/use-toast';
 import { Product } from '@/dto/product.dto';
 import useProductsQuery from '@/queries/products.query';
+import { CURRENCY } from '@/utils/utils';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { ColumnDef } from '@tanstack/react-table';
 import { Delete, Edit, MoreHorizontal } from 'lucide-react';
@@ -75,7 +76,7 @@ function ProductsPage() {
       accessorKey: 'price',
       // safe navigating is added here for skeleton loading
       accessorFn: (product) => product?.price?.toFixed(2),
-      header: 'Price',
+      header: `Price (${CURRENCY})`,
     },
     {
       id: 'actions',

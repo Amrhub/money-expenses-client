@@ -2,12 +2,10 @@
 
 import request from '@/app/axios/interceptor';
 import { ReceiptDto } from '@/dto/receipt.dto';
-import { Grid } from '@mui/material';
+import { CURRENCY, formatDate } from '@/utils/utils';
 import { useQuery } from '@tanstack/react-query';
-import Receipt from './Receipt';
 import { ColumnDef } from '@tanstack/react-table';
 import { DataTable } from '../ui/data-table';
-import { CURRENCY, formatDate } from '@/utils/utils';
 
 const columns: ColumnDef<ReceiptDto>[] = [
   {
