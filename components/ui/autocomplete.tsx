@@ -5,6 +5,7 @@ import * as React from 'react';
 import { Command, CommandGroup, CommandItem, CommandList } from '@/components/ui/command';
 import { Command as CommandPrimitive } from 'cmdk';
 import { Check } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface IProps<ValueType> {
   options: Array<{
@@ -19,6 +20,8 @@ interface IProps<ValueType> {
   onChange: (value: ValueType | null) => void;
 
   placeholder?: string;
+
+  className?: string;
 }
 
 export function Autocomplete<ValueType extends string | number>({
@@ -26,6 +29,7 @@ export function Autocomplete<ValueType extends string | number>({
   value,
   onChange,
   placeholder,
+  className,
 }: IProps<ValueType>) {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const [open, setOpen] = React.useState(false);
@@ -83,7 +87,7 @@ export function Autocomplete<ValueType extends string | number>({
 
   const selectedLabel = options.find((option) => option.value === value)?.label;
   return (
-    <Command onKeyDown={handleKeyDown} className='overflow-visible bg-transparent'>
+    <Command onKeyDown={handleKeyDown} className={cn('overflow-visible bg-transparent', className)}>
       <div className='group rounded-md border border-input px-3 py-2 text-sm ring-offset-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2'>
         <div className='flex flex-wrap gap-1'>
           {/* // TODO: when receipt items are fixed and working properly, see if this can be uncommented */}
