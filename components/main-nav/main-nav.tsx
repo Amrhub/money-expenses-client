@@ -15,7 +15,7 @@ import { useTheme } from 'next-themes';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
-import { navLinks } from '../Sidebar/nav-config';
+import { navLinks } from '../nav-config/nav-config';
 import { Button } from '../ui/button';
 import Logo from '../ui/logo';
 import { Separator } from '../ui/separator';

@@ -3,7 +3,7 @@
 import { AxiosRequestConfig } from 'axios';
 import { cookies } from 'next/headers';
 import { OpenAPIClientAxios } from 'openapi-client-axios';
-import type { Client } from './openapi.js';
+import type { Client } from './openapi';
 
 const DEFAULT_API_BASE_URL = 'http://localhost:3030';
 const definition = `${process.env.API_BASE_URL ?? DEFAULT_API_BASE_URL}/api-json`;

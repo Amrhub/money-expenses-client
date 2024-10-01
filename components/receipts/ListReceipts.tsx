@@ -1,13 +1,13 @@
 'use client';
 
 import request from '@/app/axios/interceptor';
-import { ReceiptDto } from '@/dto/receipt.dto';
 import { CURRENCY, formatDate } from '@/utils/utils';
 import { useQuery } from '@tanstack/react-query';
 import { ColumnDef } from '@tanstack/react-table';
 import { DataTable } from '../ui/data-table';
+import { GetReceiptResponseDto } from '@/app/axios/openapi';
 
-const columns: ColumnDef<ReceiptDto>[] = [
+const columns: ColumnDef<GetReceiptResponseDto>[] = [
   {
     accessorKey: 'name',
     header: 'Name',
@@ -15,7 +15,9 @@ const columns: ColumnDef<ReceiptDto>[] = [
   {
     accessorKey: 'totalPrice',
     // safe navigating is added here for skeleton loading
-    accessorFn: (receipt) => new Intl.NumberFormat().format(receipt.totalPrice),
+    accessorFn: (receipt) => {
+      return new Intl.NumberFormat().format(receipt.totalPrice);
+    },
     header: `Total Price (${CURRENCY})`,
   },
   {
@@ -70,7 +72,7 @@ const ListReceipts = () => {
     error,
   } = useQuery({
     queryKey: ['receipts'],
-    queryFn: () => request<ReceiptDto[]>({ url: '/receipts' }),
+    queryFn: () => request<GetReceiptResponseDto[]>({ url: '/receipts' }),
   });
 
   if (isError) {

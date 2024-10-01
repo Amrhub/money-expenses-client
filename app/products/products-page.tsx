@@ -13,7 +13,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useToast } from '@/components/ui/use-toast';
-import { Product } from '@/dto/product.dto';
 import useProductsQuery from '@/queries/products.query';
 import { CURRENCY } from '@/utils/utils';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -21,12 +20,13 @@ import { ColumnDef } from '@tanstack/react-table';
 import { Delete, Edit, MoreHorizontal } from 'lucide-react';
 import Head from 'next/head';
 import { useState } from 'react';
+import { ProductClass } from '../axios/openapi';
 
 function ProductsPage() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
-  const [selectedProduct, setSelectedProduct] = useState<Product | undefined>();
+  const [selectedProduct, setSelectedProduct] = useState<ProductClass | undefined>();
 
   const {
     data: response,
@@ -65,7 +65,7 @@ function ProductsPage() {
     // TODO: Add UI for error state
   }
 
-  const columns: ColumnDef<Product>[] = [
+  const columns: ColumnDef<ProductClass>[] = [
     {
       accessorKey: 'id',
       header: 'ID',

@@ -1,15 +1,10 @@
 'use server';
 
-import { Product } from '@/dto/product.dto';
 import { OptionsWithoutQuery } from '@/queries/utils.model';
 import { client } from '../interceptor';
+import { GetProductsResponseDto, ProductClass } from '../openapi';
 
-export interface IProductsQuery {
-  products: Product[];
-  count: number;
-}
-
-export const fetchProducts = async (options?: OptionsWithoutQuery<IProductsQuery>) => {
+export const fetchProducts = async (options?: OptionsWithoutQuery<GetProductsResponseDto>) => {
   try {
     // const client = await getApiClient();
     const res = await client.productsFindAll();

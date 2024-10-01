@@ -1,13 +1,13 @@
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
-import { navLinks } from "./components/Sidebar/nav-config";
+import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
+import { navLinks } from './components/nav-config/nav-config';
 
 const protectedRoutes = navLinks.filter((link) => link.protected).map((link) => link.path + '(.*)');
 
 const isProtectedRoute = createRouteMatcher([...protectedRoutes]);
 
 export default clerkMiddleware((auth, req) => {
-  if (isProtectedRoute(req)) auth().protect()
-})
+  if (isProtectedRoute(req)) auth().protect();
+});
 
 export const config = {
   matcher: [

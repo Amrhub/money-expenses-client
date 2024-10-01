@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import request from '@/app/axios/interceptor';
-import { Product } from '@/dto/product.dto';
 import {
   Dialog,
   DialogContent,
@@ -18,14 +17,15 @@ import { Loader2, Plus } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
+import { CreateProductDto, ProductClass, UpdateProductDto } from '@/app/axios/openapi';
 
 interface IProps {
   handleClose: () => void;
-  product?: Product;
+  product?: ProductClass;
 }
 
 const ProductModal = ({ handleClose, product }: IProps) => {
-  const [productInputs, setProductInputs] = useState<Omit<Product, 'id'>>({
+  const [productInputs, setProductInputs] = useState<Required<UpdateProductDto>>({
     name: '',
     price: 0,
   });
@@ -53,7 +53,7 @@ const ProductModal = ({ handleClose, product }: IProps) => {
   };
 
   const { mutate: editProduct } = useMutation({
-    mutationFn: (product: Product) =>
+    mutationFn: (product: UpdateProductDto & { id: number }) =>
       request({
         url: `/products/${product?.id}`,
         method: 'PATCH',
@@ -73,7 +73,7 @@ const ProductModal = ({ handleClose, product }: IProps) => {
   });
 
   const { mutate: addProduct } = useMutation({
-    mutationFn: (product: Omit<Product, 'id'>) =>
+    mutationFn: (product: CreateProductDto) =>
       request({
         url: `/products`,
         method: 'POST',

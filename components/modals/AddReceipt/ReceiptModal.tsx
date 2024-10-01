@@ -1,6 +1,7 @@
 'use client';
 
 import request from '@/app/axios/interceptor';
+import { Item, ProductClass } from '@/app/axios/openapi';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -10,7 +11,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Autocomplete } from '@/components/ui/autocomplete';
 import { Button } from '@/components/ui/button';
@@ -28,8 +28,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/components/ui/use-toast';
-import { Product } from '@/dto/product.dto';
-import { Item } from '@/models/receipt.model';
 import useProductsQuery from '@/queries/products.query';
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -126,7 +124,7 @@ const ReceiptModal = () => {
     items.some((item) => item.name === '' || !item.price || !item.quantity);
 
   const shouldWarnProductsChange = (): boolean => {
-    const productsMap = new Map<string, Product>(
+    const productsMap = new Map<string, ProductClass>(
       products?.products.map((product) => [product.name, product])
     );
     let shouldWarn = false;
@@ -296,7 +294,6 @@ const ReceiptModal = () => {
                           );
                           if (product) {
                             newItems[index] = {
-                              id: product.id,
                               name: product.name,
                               price: product.price,
                               quantity: items[index].quantity || 1,

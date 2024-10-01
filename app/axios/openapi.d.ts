@@ -23,6 +23,7 @@ declare namespace Components {
             isDeleted: boolean;
             userId: string;
             updatedAt: string; // date-time
+            totalPrice: number;
             items: ReceiptItem[];
         }
         export interface Item {
