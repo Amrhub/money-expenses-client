@@ -33,18 +33,20 @@ function ProductsPage() {
     isLoading,
     isError,
     isFetching,
+    error,
   } = useProductsQuery({
-    retry: 0,
-    onError: (e) => {
-      if (typeof e === 'string' && e === 'Network Error') {
-        toast({
-          title: 'Error',
-          description: 'Server is down, please try again later',
-          variant: 'destructive',
-        });
-      }
-    },
+    retry: 1,
   });
+
+  if (isError) {
+    if (typeof error === 'string' && error === 'Network Error') {
+      toast({
+        title: 'Error',
+        description: 'Server is down, please try again later',
+        variant: 'destructive',
+      });
+    }
+  }
 
   const { mutate: deleteProduct, isPending: isDeleteLoading } = useMutation({
     mutationFn: (id: number) =>

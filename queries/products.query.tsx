@@ -1,33 +1,6 @@
-import request from '@/app/axios/interceptor';
-import { Product } from '@/dto/product.dto';
+import { fetchProducts, IProductsQuery } from '@/app/axios/requests/products';
 import { useQuery } from '@tanstack/react-query';
 import { OptionsWithoutQuery } from './utils.model';
-
-interface IProductsQuery {
-  products: Product[];
-  count: number;
-}
-
-const fetchProducts = async (options?: OptionsWithoutQuery<IProductsQuery>) => {
-  try {
-    const res = await request<IProductsQuery>({
-      url: '/products',
-    });
-
-    const result = res ?? { products: [], count: 0 };
-    if (options?.onSuccess) options.onSuccess(result);
-    return result;
-  } catch (error) {
-    if (options?.onError) {
-      options.onError(error);
-    }
-    return { products: [], count: 0 };
-  } finally {
-    if (options?.onSettled) {
-      options.onSettled();
-    }
-  }
-};
 
 const useProductsQuery = (options?: OptionsWithoutQuery<IProductsQuery>) => {
   return useQuery({
