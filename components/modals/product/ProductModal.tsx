@@ -1,8 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import request from '@/app/axios/interceptor';
+import { CreateProductDto, ProductClass, UpdateProductDto } from '@/app/axios/openapi';
+import StoresAutocompleteInput from '@/components/StoresAutocomplete/StoresAutocomplete';
+import { Autocomplete } from '@/components/ui/autocomplete';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -12,12 +14,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Loader2, Plus } from 'lucide-react';
-import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
-import { CreateProductDto, ProductClass, UpdateProductDto } from '@/app/axios/openapi';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { Loader2, Plus } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 interface IProps {
   handleClose: () => void;
@@ -25,24 +27,27 @@ interface IProps {
 }
 
 const ProductModal = ({ handleClose, product }: IProps) => {
-  const [productInputs, setProductInputs] = useState<Required<UpdateProductDto>>({
+  const [productInputs, setProductInputs] = useState<CreateProductDto>({
     name: '',
     price: 0,
+    store: undefined,
   });
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (product?.name) setProductInputs({ name: product.name, price: product.price });
-  }, [product?.name, product?.price]);
+    if (product?.name)
+      setProductInputs({ name: product.name, price: product.price, store: product.store });
+  }, [product?.name, product?.price, product?.store]);
 
   const isEdit = product ? true : false;
   const queryClient = useQueryClient();
 
   const onSuccess = () => {
     queryClient.invalidateQueries({ queryKey: ['products'] });
-    resetThenClose();
+    if (productInputs.store) queryClient.invalidateQueries({ queryKey: ['stores'] });
+    // resetThenClose();
   };
 
   const onError = (error: any) => {
@@ -56,10 +61,11 @@ const ProductModal = ({ handleClose, product }: IProps) => {
     mutationFn: (product: UpdateProductDto & { id: number }) =>
       request({
         url: `/products/${product?.id}`,
-        method: 'PATCH',
+        method: 'PUT',
         data: {
           name: product.name,
           price: product.price,
+          store: product.store || undefined,
         },
       }),
     onSuccess,
@@ -80,6 +86,7 @@ const ProductModal = ({ handleClose, product }: IProps) => {
         data: {
           name: product.name,
           price: product.price,
+          store: product.store || undefined,
         },
       }),
     onSuccess,
@@ -93,6 +100,8 @@ const ProductModal = ({ handleClose, product }: IProps) => {
   });
 
   const handleAction = () => {
+    console.log(`🚀 ~ handleAction ~ isEdit:`, isEdit);
+    console.log(`🚀 ~ handleAction ~ product:`, product);
     if (isEdit && product) {
       editProduct({ ...productInputs, id: product.id });
     } else {
@@ -150,6 +159,7 @@ const ProductModal = ({ handleClose, product }: IProps) => {
               }}
             />
           </div>
+
           <div className='grid grid-cols-4 items-center gap-4'>
             <Label htmlFor='price' className='text-left'>
               Price
@@ -162,6 +172,25 @@ const ProductModal = ({ handleClose, product }: IProps) => {
                 if (isNaN(+e.target.value) && e.target.value != '.') return;
                 setProductInputs((prev) => ({ ...prev, price: +e.target.value }));
               }}
+            />
+          </div>
+
+          <div className='grid grid-cols-4 items-center gap-4'>
+            <Label htmlFor='store' className='text-left'>
+              Store
+            </Label>
+            {/* <Input
+              id='store'
+              className='col-span-3'
+              value={productInputs.store}
+              onChange={(e) => {
+                if (isNaN(+e.target.value) && e.target.value != '.') return;
+                setProductInputs((prev) => ({ ...prev, store: e.target.value }));
+              }}
+            /> */}
+            <StoresAutocompleteInput
+              productInputs={productInputs}
+              setProductInputs={setProductInputs}
             />
           </div>
         </div>

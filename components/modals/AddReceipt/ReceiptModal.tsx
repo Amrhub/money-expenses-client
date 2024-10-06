@@ -49,6 +49,7 @@ const ReceiptModal = () => {
 
   const [open, setOpen] = useState(false);
   const [receiptName, setReceiptName] = React.useState('');
+  const [storeName, setStoreName] = React.useState('');
   const [items, setItems] = useState<Item[]>(itemsInitialState);
   const receiptListDiv = useRef<HTMLDivElement>(null);
   const [isAlertOpened, setIsAlertOpened] = useState(false);
@@ -251,17 +252,39 @@ const ReceiptModal = () => {
             </DialogDescription>
           </DialogHeader>
           {/* <section className='flex flex-col'> */}
-          <div className='flex w-full max-w-sm items-center gap-1.5'>
-            <Label htmlFor='name' className='text-left'>
-              Name
-            </Label>
+          <div className='flex flex-row sm:flex-col gap-2'>
             <Input
               className='w-full'
-              placeholder='e.g. Carrefour Receipt | 02-07-2024'
+              placeholder='Carrefour Receipt | 02-07-2024'
               value={receiptName}
               onChange={(e) => setReceiptName(e.target.value)}
               id='name'
               autoComplete='receipt-name'
+            />
+
+            <Autocomplete
+              placeholder='Store (Optional)'
+              className='mt-[10px] sm:mt-0'
+              options={[
+                {
+                  value: 'Carrefour',
+                  label: 'Carrefour',
+                },
+                {
+                  value: 'Lulu',
+                  label: 'Lulu',
+                },
+                {
+                  value: 'Geant',
+                  label: 'Geant',
+                },
+                {
+                  value: 'Spinneys',
+                  label: 'Spinneys',
+                },
+              ]}
+              value={storeName}
+              onChange={(value) => setStoreName(value ?? '')}
             />
           </div>
           <Separator className='my-4' />

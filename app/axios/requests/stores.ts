@@ -2,14 +2,16 @@
 
 import { OptionsWithoutQuery } from '@/queries/utils.model';
 import { client } from '../interceptor';
-import { GetProductsResponseDto } from '../openapi';
+import { Paths } from '../openapi';
 
-const defaultValue: GetProductsResponseDto = { products: [], count: 0 };
+const defaultValue: string[] = [];
 
-export const fetchProducts = async (options?: OptionsWithoutQuery<GetProductsResponseDto>) => {
+export const fetchUserStores = async (
+  options?: OptionsWithoutQuery<Paths.ProductsFindAllStores.Responses.$200>
+) => {
   try {
     // const client = await getApiClient();
-    const res = await client.productsFindAll();
+    const res = await client.productsFindAllStores();
 
     const result = res.data ?? defaultValue;
     if (options?.onSuccess) options.onSuccess(result);

@@ -10,6 +10,7 @@ declare namespace Components {
     namespace Schemas {
         export interface CreateProductDto {
             name: string;
+            store?: string;
             price: number;
         }
         export interface GetProductsResponseDto {
@@ -35,6 +36,7 @@ declare namespace Components {
             id: number;
             createdAt: string; // date-time
             updatedAt: string; // date-time
+            store: string;
             isDeleted: boolean;
             name: string;
             price: number;
@@ -56,6 +58,7 @@ declare namespace Components {
         export interface UpdateProductDto {
             name?: string;
             price?: number;
+            store?: string;
         }
     }
 }
@@ -80,6 +83,13 @@ declare namespace Paths {
         }
         namespace Responses {
             export type $200 = Components.Schemas.GetProductsResponseDto;
+            export interface $401 {
+            }
+        }
+    }
+    namespace ProductsFindAllStores {
+        namespace Responses {
+            export type $200 = string[];
             export interface $401 {
             }
         }
@@ -165,6 +175,14 @@ export interface OperationMethods {
     config?: AxiosRequestConfig  
   ): OperationResponse<Paths.ProductsRemove.Responses.$200>
   /**
+   * productsFindAllStores
+   */
+  'productsFindAllStores'(
+    parameters?: Parameters<UnknownParamsObject> | null,
+    data?: any,
+    config?: AxiosRequestConfig  
+  ): OperationResponse<Paths.ProductsFindAllStores.Responses.$200>
+  /**
    * receiptsFindAll
    */
   'receiptsFindAll'(
@@ -218,6 +236,16 @@ export interface PathsDictionary {
       data?: any,
       config?: AxiosRequestConfig  
     ): OperationResponse<Paths.ProductsRemove.Responses.$200>
+  }
+  ['/products/stores']: {
+    /**
+     * productsFindAllStores
+     */
+    'get'(
+      parameters?: Parameters<UnknownParamsObject> | null,
+      data?: any,
+      config?: AxiosRequestConfig  
+    ): OperationResponse<Paths.ProductsFindAllStores.Responses.$200>
   }
   ['/receipts']: {
     /**
