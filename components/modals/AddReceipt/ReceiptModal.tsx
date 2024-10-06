@@ -2,6 +2,7 @@
 
 import request from '@/app/axios/interceptor';
 import { Item, ProductClass } from '@/app/axios/openapi';
+import StoresAutocompleteInput from '@/components/StoresAutocomplete/StoresAutocomplete';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,7 +26,6 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/components/ui/use-toast';
 import useProductsQuery from '@/queries/products.query';
@@ -33,7 +33,7 @@ import useProductsQuery from '@/queries/products.query';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { Loader2, Plus, Trash } from 'lucide-react';
-import React, { useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 
 const itemsInitialState = [
   {
@@ -62,6 +62,12 @@ const ReceiptModal = () => {
 
   const { data: products, isLoading } = useProductsQuery();
 
+  const filteredProducts = useMemo(() => {
+    return storeName
+      ? products?.products.filter((product) => product.store === storeName || !product.store) ?? []
+      : products?.products ?? [];
+  }, [storeName, products]);
+
   const addInput = () => {
     setItems([...items, { name: '', price: 0, quantity: 0 }]);
     // Differ the scroll to the next tick to allow the new item to be rendered
@@ -83,6 +89,7 @@ const ReceiptModal = () => {
         method: 'POST',
         data: {
           name: receiptName,
+          store: storeName ?? null,
           items: items.map((item) => ({
             name: item.name,
             price: item.price,
@@ -262,29 +269,10 @@ const ReceiptModal = () => {
               autoComplete='receipt-name'
             />
 
-            <Autocomplete
-              placeholder='Store (Optional)'
+            <StoresAutocompleteInput
               className='mt-[10px] sm:mt-0'
-              options={[
-                {
-                  value: 'Carrefour',
-                  label: 'Carrefour',
-                },
-                {
-                  value: 'Lulu',
-                  label: 'Lulu',
-                },
-                {
-                  value: 'Geant',
-                  label: 'Geant',
-                },
-                {
-                  value: 'Spinneys',
-                  label: 'Spinneys',
-                },
-              ]}
               value={storeName}
-              onChange={(value) => setStoreName(value ?? '')}
+              onValueChanges={(value) => setStoreName(value ?? '')}
             />
           </div>
           <Separator className='my-4' />
@@ -303,7 +291,7 @@ const ReceiptModal = () => {
                     <Autocomplete
                       placeholder='Name'
                       options={
-                        products?.products.map((product) => ({
+                        filteredProducts.map((product) => ({
                           value: product.name,
                           label: product.name,
                         })) || []
@@ -312,7 +300,7 @@ const ReceiptModal = () => {
                       onChange={(value) => {
                         setItems((prev) => {
                           const newItems = [...prev];
-                          const product = products?.products.find(
+                          const product = filteredProducts.find(
                             (product) => product.name === value
                           );
                           if (product) {

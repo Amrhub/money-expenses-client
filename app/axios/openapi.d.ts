@@ -52,6 +52,7 @@ declare namespace Components {
         export interface ReqCreateReceiptsDto {
             name: string;
             items: Item[];
+            store?: string;
             newProductsNames?: string[];
             modifiedProductsNames?: string[];
         }
@@ -223,7 +224,7 @@ export interface PathsDictionary {
     /**
      * productsUpdate
      */
-    'patch'(
+    'put'(
       parameters?: Parameters<Paths.ProductsUpdate.PathParameters> | null,
       data?: Paths.ProductsUpdate.RequestBody,
       config?: AxiosRequestConfig  

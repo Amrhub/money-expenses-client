@@ -179,18 +179,12 @@ const ProductModal = ({ handleClose, product }: IProps) => {
             <Label htmlFor='store' className='text-left'>
               Store
             </Label>
-            {/* <Input
-              id='store'
-              className='col-span-3'
-              value={productInputs.store}
-              onChange={(e) => {
-                if (isNaN(+e.target.value) && e.target.value != '.') return;
-                setProductInputs((prev) => ({ ...prev, store: e.target.value }));
-              }}
-            /> */}
             <StoresAutocompleteInput
-              productInputs={productInputs}
-              setProductInputs={setProductInputs}
+              className='col-span-3'
+              value={productInputs.store || ''}
+              onValueChanges={(value) => {
+                setProductInputs((prev) => ({ ...prev, store: value ?? '' }));
+              }}
             />
           </div>
         </div>
