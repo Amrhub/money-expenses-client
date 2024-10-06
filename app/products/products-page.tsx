@@ -140,6 +140,8 @@ function ProductsPage() {
           columns={columns}
           data={response?.products ?? []}
           isLoading={isLoading || isFetching || isDeleteLoading}
+          showColumnVisibility
+          filterBy='name'
         />
       </div>
     </>

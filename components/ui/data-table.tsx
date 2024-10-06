@@ -2,10 +2,13 @@
 
 import {
   ColumnDef,
+  ColumnFiltersState,
   flexRender,
   getCoreRowModel,
+  getFilteredRowModel,
   getPaginationRowModel,
   useReactTable,
+  VisibilityState,
 } from '@tanstack/react-table';
 
 import {
@@ -31,17 +34,26 @@ interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   isLoading?: boolean;
+  showColumnVisibility?: boolean;
+  filterBy?: keyof TData;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   isLoading,
+  showColumnVisibility,
+  filterBy,
 }: DataTableProps<TData, TValue>) {
   const tableData = useMemo(
     () => (isLoading ? (Array(10).fill({}) as TData[]) : data),
     [isLoading, data]
   );
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
+    id: false,
+  });
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+
   const tableColumns = useMemo(
     () =>
       isLoading
@@ -71,10 +83,58 @@ export function DataTable<TData, TValue>({
     columns: tableColumns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    onColumnVisibilityChange: setColumnVisibility,
+    onColumnFiltersChange: setColumnFilters,
+    getFilteredRowModel: getFilteredRowModel(),
+    state: {
+      columnVisibility,
+      columnFilters,
+    },
   });
 
   return (
     <div>
+      {(!!filterBy || !!showColumnVisibility) && (
+        <div className='flex items-center pb-4 gap-4 sm:gap-0'>
+          {!!filterBy && (
+            <Input
+              placeholder={`Filter by ${filterBy as string}`}
+              value={(table.getColumn(filterBy as string)?.getFilterValue() as string) || ''}
+              onChange={(event) =>
+                table.getColumn(filterBy as string)?.setFilterValue(event.target.value)
+              }
+              className='max-w-sm'
+            />
+          )}
+          {!!showColumnVisibility && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant='outline' className='ml-auto'>
+                  Columns
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align='end'>
+                {table
+                  .getAllColumns()
+                  .filter((column) => column.getCanHide())
+                  .map((column) => {
+                    return (
+                      <DropdownMenuCheckboxItem
+                        key={column.id}
+                        className='capitalize'
+                        checked={column.getIsVisible()}
+                        onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                      >
+                        {column.id}
+                      </DropdownMenuCheckboxItem>
+                    );
+                  })}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+        </div>
+      )}
+
       <div className='rounded-md border'>
         <Table>
           <TableHeader>
@@ -139,11 +199,19 @@ export function DataTable<TData, TValue>({
   );
 }
 
-import { Table as TanStackTable } from '@tanstack/react-table';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './select';
-import { useMemo } from 'react';
-import { Skeleton } from './skeleton';
 import { cn } from '@/lib/utils';
+import { Table as TanStackTable } from '@tanstack/react-table';
+import { useMemo, useState } from 'react';
+import { Button } from './button';
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from './dropdown-menu';
+import { Input } from './input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './select';
+import { Skeleton } from './skeleton';
 
 interface DataTablePaginationProps<TData> {
   table: TanStackTable<TData>;
